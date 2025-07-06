@@ -145,7 +145,7 @@ def main(query, model, dry_run, verbose, no_confirm):
                 result = command_runner.execute(generated_command)
 
                 #results
-                if result.sucess:
+                if result.success:
                     console.print(Panel(
                         f"[bold green]Command executed successfully[/bold green]\n"
                         f"Exit code: {result.exit_code}\n"

@@ -25,11 +25,14 @@ class LLMHandler:
         self._validate_setup()
     
     def _validate_setup(self):
-        #connection check
         try:
-            models = self.client.list()
-            available_models = [m['name'] for m in models['models']]
-            
+            models_response = self.client.list()
+            print("DEBUG models_response:", models_response, type(models_response))
+
+            models = models_response.models  # Extract the list of Model objects
+
+            available_models = [m.model for m in models]  # Correct attribute
+
             if self.model not in available_models:
                 logger.warning(f"Model {self.model} not found. Available: {available_models}")
                 try:
@@ -37,11 +40,14 @@ class LLMHandler:
                     self.client.pull(self.model)
                 except Exception as e:
                     raise Exception(f"Failed to pull model {self.model}: {e}")
-            
+
             logger.info(f"LLM Handler initialized with model: {self.model}")
-            
+
         except Exception as e:
             raise Exception(f"Failed to connect to Ollama: {e}")
+
+
+
         
     def generate_command(self, query: str) -> str:
         #actul generation of commands
