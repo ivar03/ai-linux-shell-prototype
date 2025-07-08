@@ -9,12 +9,15 @@ from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 
 # Local imports
 from commands.llm_handler import LLMHandler
+from commands import context_suggester
+from commands import auto_tagger
 from executor.safety_checker import SafetyChecker
 from executor.command_runner import CommandRunner
+from monitor import resources
 from logs import setup_logging, log_session
 
 console = Console()
@@ -24,15 +27,20 @@ console = Console()
 @click.option('--model', '-m', default='llama3.2:3b', help='Ollama model to use')
 @click.option('--dry-run', '-d', is_flag=True, help='Show command without executing')
 @click.option('--verbose', '-v', is_flag=True, help='Verbose output')
-@click.option('--no-confirm', is_flag=True, help='Skip Confirmation')
+@click.option('--no-confirm', is_flag=True, help='Skip confirmation')
 @click.option('--advanced', '-a', is_flag=True, help='Use advanced prompt engineering')
 @click.option('--split-multi', '-s', is_flag=True, help='Enable splitting of multi-command outputs')
+@click.option('--auto-suggest', is_flag=True, help='Show contextual suggestions on launch')
 @click.version_option(version='0.1.0')
-def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
+def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto_suggest):
     logger = setup_logging(verbose)
     session_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     try:
+        if auto_suggest:
+            context_suggester.suggest_all()
+            console.print()
+
         llm_handler = LLMHandler(model=model)
         safety_checker = SafetyChecker()
         command_runner = CommandRunner()
@@ -42,6 +50,27 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
             title="🤖 AI Shell",
             border_style="cyan"
         ))
+
+        # System Resource Checks before heavy execution
+        console.print("[blue]Checking system resources...[/blue]")
+        disk_status = resources.check_disk_usage()
+        cpu_status = resources.check_cpu_usage()
+        mem_status = resources.check_memory_usage()
+        zombie_status = resources.check_zombie_processes()
+
+        warnings = []
+        for status in [disk_status, cpu_status, mem_status, zombie_status]:
+            if not status["ok"]:
+                warnings.append(status.get("warning", status["message"]))
+        if warnings:
+            console.print(Panel(
+                "\n".join(warnings),
+                title="⚠️ System Resource Warnings",
+                border_style="yellow"
+            ))
+            if not Confirm.ask("[bold yellow]System resources are low. Proceed anyway?[/bold yellow]", default=False):
+                console.print("[red]Aborted due to system resource concerns.[/red]")
+                sys.exit(1)
 
         console.print("Generating command...", style="yellow")
         try:
@@ -63,15 +92,22 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
         for idx, generated_command in enumerate(all_commands, start=1):
             console.print(Panel(
                 f"[bold green]{generated_command}[/bold green]",
-                title=f"📝 Generated Command [{idx}/{len(generated_commands)}]",
+                title=f"📝 Generated Command [{idx}/{len(all_commands)}]",
                 border_style="green"
             ))
+
+            tags = auto_tagger.auto_tag(query, generated_command)
+            if tags:
+                console.print(f"[blue]Auto-tags:[/blue] {', '.join(tags)}")
 
             while True:
                 safety_result = safety_checker.check_command(generated_command)
 
                 if not safety_result.is_safe:
-                    blocked_info = f"\n[bold red]Blocked Patterns:[/bold red] {safety_result.blocked_patterns}" if safety_result.blocked_patterns else ""
+                    blocked_info = (
+                        f"\n[bold red]Blocked Patterns:[/bold red] {safety_result.blocked_patterns}"
+                        if safety_result.blocked_patterns else ""
+                    )
                     console.print(Panel(
                         f"[bold red]SAFETY WARNING[/bold red]\n"
                         f"Reason: {safety_result.reason}\n"
@@ -82,18 +118,18 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
 
                     if safety_result.risk_level in ["critical", "high"]:
                         console.print("[red]Command blocked due to critical/high risk.[/red]")
-                        log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason)
+                        log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason, tags=tags)
                         break
                     else:
                         console.print("[yellow]Warning: Proceed with caution.[/yellow]")
 
                 if dry_run:
                     console.print("[yellow]Dry run mode - command not executed.[/yellow]")
-                    log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason)
+                    log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason, tags=tags)
                     break
 
-                execute = False  
-                
+                execute = False
+
                 if no_confirm:
                     execute = True
                 else:
@@ -107,16 +143,16 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
 
                     if choice == "n":
                         console.print("[red]Command skipped by user.[/red]")
-                        log_session(session_id, query, generated_command, "SKIPPED", "User skipped")
+                        log_session(session_id, query, generated_command, "SKIPPED", "User skipped", tags=tags)
                         break
-
                     elif choice == "e":
                         generated_command = Prompt.ask(
                             "[bold]Edit command[/bold]",
                             default=generated_command
                         )
+                        tags = auto_tagger.auto_tag(query, generated_command)
+                        console.print(f"[blue]Updated Auto-tags:[/blue] {', '.join(tags)}")
                         continue
-
                     elif choice == "i":
                         console.print(Panel(
                             f"Original Query: {query}\n"
@@ -124,12 +160,12 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
                             f"Model: {model}\n"
                             f"Safety: {'Safe' if safety_result.is_safe else safety_result.reason}\n"
                             f"Risk Level: {safety_result.risk_level}\n"
+                            f"Tags: {', '.join(tags)}\n"
                             f"Session ID: {session_id}",
                             title="Command Info",
                             border_style="blue"
                         ))
                         continue
-
                     elif choice == "y":
                         execute = True
 
@@ -150,7 +186,7 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
                                 console.print(Panel(result.stdout, title="Output", border_style="blue"))
                             if result.stderr and verbose:
                                 console.print(Panel(result.stderr, title="Stderr", border_style="yellow"))
-                            log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500])
+                            log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500], execution_time=result.execution_time, model_used=model, tags=tags)
                         else:
                             console.print(Panel(
                                 f"[bold red]Command failed[/bold red]\n"
@@ -159,13 +195,13 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
                                 title="Execution Failed",
                                 border_style="red"
                             ))
-                            log_session(session_id, query, generated_command, "FAILED", result.stderr)
+                            log_session(session_id, query, generated_command, "FAILED", result.stderr, tags=tags)
                         break
 
                     except Exception as e:
                         console.print(f"[red]Execution error:[/red] {e}")
                         logger.error(f"Execution failed: {e}")
-                        log_session(session_id, query, generated_command, "ERROR", str(e))
+                        log_session(session_id, query, generated_command, "ERROR", str(e), tags=tags)
                         break
 
     except KeyboardInterrupt:
@@ -175,12 +211,17 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
         console.print(f"[red]Unexpected error:[/red] {e}")
         logger.error(f"Unexpected error: {e}")
         sys.exit(1)
-
 @click.group()
 def cli():
     pass
 
 cli.add_command(main, name="run")
+
+@cli.command()
+def suggest():
+    """Show contextual suggestions based on your usage."""
+    from commands import context_suggester
+    context_suggester.suggest_all()
 
 @cli.group()
 def denylist():

@@ -23,6 +23,9 @@ class LogEntry:
     execution_time: float = 0.0
     model_used: str = ""
     safety_warnings: str = ""
+    tags: List[str] = None
+    context: Dict[str, Any] = None
+
 
 class LogManager:
     
@@ -50,14 +53,18 @@ class LogManager:
                     result TEXT,
                     execution_time REAL DEFAULT 0.0,
                     model_used TEXT DEFAULT '',
-                    safety_warnings TEXT DEFAULT ''
+                    safety_warnings TEXT DEFAULT '',
+                    tags TEXT DEFAULT '',
+                    context TEXT DEFAULT ''
                 )
             ''')
             conn.commit()
     
     def log_session(self, session_id: str, query: str, command: str, status: str, 
-                   result: str = "", execution_time: float = 0.0, model_used: str = "",
-                   safety_warnings: str = ""):
+               result: str = "", execution_time: float = 0.0, model_used: str = "",
+               safety_warnings: str = "", tags: Optional[List[str]] = None,
+               context: Optional[Dict[str, Any]] = None):
+        
         entry = LogEntry(
             session_id=session_id,
             timestamp=datetime.now().isoformat(),
@@ -67,7 +74,9 @@ class LogManager:
             result=result,
             execution_time=execution_time,
             model_used=model_used,
-            safety_warnings=safety_warnings
+            safety_warnings=safety_warnings,
+            tags=tags or [],
+            context=context or {}
         )
         
         if self.log_format == "sqlite":
@@ -81,12 +90,14 @@ class LogManager:
                 conn.execute('''
                     INSERT INTO sessions 
                     (session_id, timestamp, query, generated_command, status, result, 
-                     execution_time, model_used, safety_warnings)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     execution_time, model_used, safety_warnings, tags, context)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     entry.session_id, entry.timestamp, entry.query, 
                     entry.generated_command, entry.status, entry.result,
-                    entry.execution_time, entry.model_used, entry.safety_warnings
+                    entry.execution_time, entry.model_used, entry.safety_warnings,
+                    json.dumps(entry.tags),  
+                    json.dumps(entry.context)  
                 ))
                 conn.commit()
         except Exception as e:
@@ -103,7 +114,7 @@ class LogManager:
                     except json.JSONDecodeError:
                         logs = []
             
-            # Add new entry
+            # Add new entry - asdict handles nested structures automatically
             logs.append(asdict(entry))
             
             # Keep only last 1000 entries to prevent file from growing too large
@@ -116,6 +127,67 @@ class LogManager:
                 
         except Exception as e:
             logging.error(f"Failed to log to JSON: {e}")
+
+    def get_frequent_commands(self, limit: int = 5) -> List[str]:
+        if self.log_format == "sqlite":
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute('''
+                    SELECT generated_command, COUNT(*) as count
+                    FROM sessions
+                    GROUP BY generated_command
+                    ORDER BY count DESC
+                    LIMIT ?
+                ''', (limit,))
+                return [row[0] for row in cursor.fetchall()]
+        else:
+            if not self.json_log_path.exists():
+                return []
+            with open(self.json_log_path, 'r') as f:
+                logs = json.load(f)
+            command_counts = {}
+            for log in logs:
+                cmd = log.get('generated_command', '')
+                if cmd:
+                    command_counts[cmd] = command_counts.get(cmd, 0) + 1
+            return [cmd for cmd, _ in sorted(command_counts.items(), key=lambda x: x[1], reverse=True)[:limit]]
+
+    def get_recent_failures(self, limit: int = 5) -> List[LogEntry]:
+        if self.log_format == "sqlite":
+            with sqlite3.connect(self.db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.execute('''
+                    SELECT * FROM sessions
+                    WHERE status IN ("FAILED", "ERROR")
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                ''', (limit,))
+                return [LogEntry(**dict(row)) for row in cursor.fetchall()]
+        else:
+            if not self.json_log_path.exists():
+                return []
+            with open(self.json_log_path, 'r') as f:
+                logs = json.load(f)
+            failures = [log for log in reversed(logs) if log.get('status') in ["FAILED", "ERROR"]]
+            return [LogEntry(**log) for log in failures[:limit]]
+
+    def get_commands_by_tag(self, tag: str) -> List[LogEntry]:
+        if self.log_format == "sqlite":
+            with sqlite3.connect(self.db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.execute('''
+                    SELECT * FROM sessions
+                    WHERE tags LIKE ?
+                    ORDER BY timestamp DESC
+                ''', (f'%"{tag}"%',))
+                return [LogEntry(**dict(row)) for row in cursor.fetchall()]
+        else:
+            if not self.json_log_path.exists():
+                return []
+            with open(self.json_log_path, 'r') as f:
+                logs = json.load(f)
+            tagged = [log for log in reversed(logs) if tag in (log.get('tags') or [])]
+            return [LogEntry(**log) for log in tagged]
+
     
     def get_history(self, count: int = 10) -> List[LogEntry]:
         if self.log_format == "sqlite":
@@ -135,6 +207,10 @@ class LogManager:
                 
                 entries = []
                 for row in cursor:
+                    # Parse JSON strings back to Python objects
+                    tags = json.loads(row['tags']) if row['tags'] else []
+                    context = json.loads(row['context']) if row['context'] else {}
+                    
                     entry = LogEntry(
                         session_id=row['session_id'],
                         timestamp=row['timestamp'],
@@ -144,7 +220,9 @@ class LogManager:
                         result=row['result'] or "",
                         execution_time=row['execution_time'] or 0.0,
                         model_used=row['model_used'] or "",
-                        safety_warnings=row['safety_warnings'] or ""
+                        safety_warnings=row['safety_warnings'] or "",
+                        tags=tags,
+                        context=context
                     )
                     entries.append(entry)
                 
