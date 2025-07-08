@@ -247,6 +247,29 @@ class SafetyChecker:
                     suggestions=["Double-check wildcard scope"]
                 )
         return SafetyResult(is_safe=True, risk_level=RiskLevel.LOW.value, reason="")
+    
+    def split_commands(self, command_string: str) -> List[str]:
+        if not command_string.strip():
+            return []
+
+        # Use shlex to respect quotes
+        tokens = shlex.split(command_string, posix=True)
+        commands = []
+        current_command = []
+
+        for token in tokens:
+            if token in ['&&', ';', '|']:
+                if current_command:
+                    commands.append(' '.join(current_command))
+                    current_command = []
+            else:
+                current_command.append(token)
+
+        if current_command:
+            commands.append(' '.join(current_command))
+
+        return commands
+
 
     def validate_command_syntax(self, command: str) -> Tuple[bool, str]:
         try:

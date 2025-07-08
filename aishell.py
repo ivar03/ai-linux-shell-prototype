@@ -25,8 +25,10 @@ console = Console()
 @click.option('--dry-run', '-d', is_flag=True, help='Show command without executing')
 @click.option('--verbose', '-v', is_flag=True, help='Verbose output')
 @click.option('--no-confirm', is_flag=True, help='Skip Confirmation')
+@click.option('--advanced', '-a', is_flag=True, help='Use advanced prompt engineering')
+@click.option('--split-multi', '-s', is_flag=True, help='Enable splitting of multi-command outputs')
 @click.version_option(version='0.1.0')
-def main(query, model, dry_run, verbose, no_confirm):
+def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi):
     logger = setup_logging(verbose)
     session_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -43,115 +45,128 @@ def main(query, model, dry_run, verbose, no_confirm):
 
         console.print("Generating command...", style="yellow")
         try:
-            generated_command = llm_handler.generate_command(query)
+            mode = "advanced" if advanced else "default"
+            generated_commands = llm_handler.generate_command(query, mode=mode)
         except Exception as e:
             console.print(f"[red]Error generating command:[/red] {e}")
             logger.error(f"LLM generation failed: {e}")
             sys.exit(1)
 
-        console.print(Panel(
-            f"[bold green]{generated_command}[/bold green]",
-            title="📝 Generated Command",
-            border_style="green"
-        ))
+        all_commands = []
+        if split_multi:
+            for cmd_str in generated_commands:
+                fragments = safety_checker.split_commands(cmd_str)
+                all_commands.extend(fragments)
+        else:
+            all_commands = generated_commands
 
-        while True:
-            safety_result = safety_checker.check_command(generated_command)
+        for idx, generated_command in enumerate(all_commands, start=1):
+            console.print(Panel(
+                f"[bold green]{generated_command}[/bold green]",
+                title=f"📝 Generated Command [{idx}/{len(generated_commands)}]",
+                border_style="green"
+            ))
 
-            if not safety_result.is_safe:
-                blocked_info = f"\n[bold red]Blocked Patterns:[/bold red] {safety_result.blocked_patterns}" if safety_result.blocked_patterns else ""
-                console.print(Panel(
-                    f"[bold red]SAFETY WARNING[/bold red]\n"
-                    f"Reason: {safety_result.reason}\n"
-                    f"Risk Level: {safety_result.risk_level}{blocked_info}",
-                    title="Safety Check Failed",
-                    border_style="red"
-                ))
+            while True:
+                safety_result = safety_checker.check_command(generated_command)
 
-                if safety_result.risk_level in ["critical", "high"]:
-                    console.print("[red]Command blocked due to critical/high risk.[/red]")
-                    log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason)
-                    sys.exit(1)
+                if not safety_result.is_safe:
+                    blocked_info = f"\n[bold red]Blocked Patterns:[/bold red] {safety_result.blocked_patterns}" if safety_result.blocked_patterns else ""
+                    console.print(Panel(
+                        f"[bold red]SAFETY WARNING[/bold red]\n"
+                        f"Reason: {safety_result.reason}\n"
+                        f"Risk Level: {safety_result.risk_level}{blocked_info}",
+                        title="Safety Check Failed",
+                        border_style="red"
+                    ))
+
+                    if safety_result.risk_level in ["critical", "high"]:
+                        console.print("[red]Command blocked due to critical/high risk.[/red]")
+                        log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason)
+                        break
+                    else:
+                        console.print("[yellow]Warning: Proceed with caution.[/yellow]")
+
+                if dry_run:
+                    console.print("[yellow]Dry run mode - command not executed.[/yellow]")
+                    log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason)
+                    break
+
+                execute = False  
+                
+                if no_confirm:
+                    execute = True
                 else:
-                    console.print("[yellow]Warning: Proceed with caution.[/yellow]")
+                    console.print("\nOptions:")
+                    console.print("[bold green]y[/bold green] - Execute")
+                    console.print("[bold red]n[/bold red] - Skip")
+                    console.print("[bold yellow]e[/bold yellow] - Edit")
+                    console.print("[bold blue]i[/bold blue] - Info")
 
-            if dry_run:
-                console.print("[yellow]Dry run mode - command not executed.[/yellow]")
-                log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason)
-                sys.exit(0)
+                    choice = Prompt.ask("\n[bold]Proceed?[/bold]", choices=["y", "n", "e", "i"], default="n")
 
-            if no_confirm:
-                break
+                    if choice == "n":
+                        console.print("[red]Command skipped by user.[/red]")
+                        log_session(session_id, query, generated_command, "SKIPPED", "User skipped")
+                        break
 
-            console.print("\nOptions:")
-            console.print("[bold green]y[/bold green] - Execute")
-            console.print("[bold red]n[/bold red] - Cancel")
-            console.print("[bold yellow]e[/bold yellow] - Edit")
-            console.print("[bold blue]i[/bold blue] - Info")
+                    elif choice == "e":
+                        generated_command = Prompt.ask(
+                            "[bold]Edit command[/bold]",
+                            default=generated_command
+                        )
+                        continue
 
-            choice = Prompt.ask("\n[bold]Proceed?[/bold]", choices=["y", "n", "e", "i"], default="n")
+                    elif choice == "i":
+                        console.print(Panel(
+                            f"Original Query: {query}\n"
+                            f"Generated Command: {generated_command}\n"
+                            f"Model: {model}\n"
+                            f"Safety: {'Safe' if safety_result.is_safe else safety_result.reason}\n"
+                            f"Risk Level: {safety_result.risk_level}\n"
+                            f"Session ID: {session_id}",
+                            title="Command Info",
+                            border_style="blue"
+                        ))
+                        continue
 
-            if choice == "n":
-                console.print("[red]Command cancelled by user.[/red]")
-                log_session(session_id, query, generated_command, "CANCELLED", "User cancelled")
-                sys.exit(0)
+                    elif choice == "y":
+                        execute = True
 
-            elif choice == "e":
-                generated_command = Prompt.ask(
-                    "[bold]Edit command[/bold]",
-                    default=generated_command
-                )
-                continue
+                if execute:
+                    console.print("[green]Executing command...[/green]")
+                    try:
+                        result = command_runner.execute(generated_command)
 
-            elif choice == "i":
-                console.print(Panel(
-                    f"Original Query: {query}\n"
-                    f"Generated Command: {generated_command}\n"
-                    f"Model: {model}\n"
-                    f"Safety: {'Safe' if safety_result.is_safe else safety_result.reason}\n"
-                    f"Risk Level: {safety_result.risk_level}\n"
-                    f"Session ID: {session_id}",
-                    title="Command Info",
-                    border_style="blue"
-                ))
-                continue
+                        if result.success:
+                            console.print(Panel(
+                                f"[bold green]Command executed successfully[/bold green]\n"
+                                f"Exit code: {result.exit_code}\n"
+                                f"Execution time: {result.execution_time:.2f}s",
+                                title="Execution Success",
+                                border_style="green"
+                            ))
+                            if result.stdout:
+                                console.print(Panel(result.stdout, title="Output", border_style="blue"))
+                            if result.stderr and verbose:
+                                console.print(Panel(result.stderr, title="Stderr", border_style="yellow"))
+                            log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500])
+                        else:
+                            console.print(Panel(
+                                f"[bold red]Command failed[/bold red]\n"
+                                f"Exit code: {result.exit_code}\n"
+                                f"Error: {result.stderr}",
+                                title="Execution Failed",
+                                border_style="red"
+                            ))
+                            log_session(session_id, query, generated_command, "FAILED", result.stderr)
+                        break
 
-            elif choice == "y":
-                break
-
-        console.print("[green]Executing command...[/green]")
-        try:
-            result = command_runner.execute(generated_command)
-
-            if result.success:
-                console.print(Panel(
-                    f"[bold green]Command executed successfully[/bold green]\n"
-                    f"Exit code: {result.exit_code}\n"
-                    f"Execution time: {result.execution_time:.2f}s",
-                    title="Execution Success",
-                    border_style="green"
-                ))
-                if result.stdout:
-                    console.print(Panel(result.stdout, title="Output", border_style="blue"))
-                if result.stderr and verbose:
-                    console.print(Panel(result.stderr, title="Stderr", border_style="yellow"))
-                log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500])
-            else:
-                console.print(Panel(
-                    f"[bold red]Command failed[/bold red]\n"
-                    f"Exit code: {result.exit_code}\n"
-                    f"Error: {result.stderr}",
-                    title="Execution Failed",
-                    border_style="red"
-                ))
-                log_session(session_id, query, generated_command, "FAILED", result.stderr)
-                sys.exit(result.exit_code)
-
-        except Exception as e:
-            console.print(f"[red]Execution error:[/red] {e}")
-            logger.error(f"Execution failed: {e}")
-            log_session(session_id, query, generated_command, "ERROR", str(e))
-            sys.exit(1)
+                    except Exception as e:
+                        console.print(f"[red]Execution error:[/red] {e}")
+                        logger.error(f"Execution failed: {e}")
+                        log_session(session_id, query, generated_command, "ERROR", str(e))
+                        break
 
     except KeyboardInterrupt:
         console.print("\n[red]Interrupted by user[/red]")

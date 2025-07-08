@@ -4,6 +4,7 @@ import re
 import logging
 from typing import Optional, Dict, List
 from dataclasses import dataclass
+from commands.prompt_generator import PromptGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class LLMHandler:
         self.model = model
         self.host = host
         self.client = ollama.Client(host=host)
+        self.prompt_generator = PromptGenerator()
         self._validate_setup()
     
     def _validate_setup(self):
@@ -49,42 +51,33 @@ class LLMHandler:
 
 
         
-    def generate_command(self, query: str) -> str:
-        #actul generation of commands
+    def generate_command(self, query: str, mode: str = "default") -> List[str]:
         try:
-            prompt = self._build_prompt(query)
-            
+            system_prompt, user_prompt = self.prompt_generator.generate_contextual_prompt(query, mode=mode)
+
             response = self.client.chat(
                 model=self.model,
                 messages=[
-                    {
-                        'role': 'system',
-                        'content': self._get_system_prompt()
-                    },
-                    {
-                        'role': 'user',
-                        'content': prompt
-                    }
+                    {'role': 'system', 'content': system_prompt},
+                    {'role': 'user', 'content': user_prompt}
                 ],
                 options={
-                    'temperature': 0.1,  
+                    'temperature': 0.1,
                     'top_p': 0.9,
-                    'num_predict': 100, 
+                    'num_predict': 200,
                 }
             )
-            
+
             raw_command = response['message']['content'].strip()
-            
-            cleaned_command = self._clean_command_response(raw_command)
-            
-            if not cleaned_command:
-                raise ValueError("LLM returned empty command")
-            
-            #log the generation
-            logger.info(f"Generated command: {cleaned_command}")
-            
-            return cleaned_command
-            
+            cleaned_commands = self._clean_command_response(raw_command)
+
+            if not cleaned_commands:
+                raise ValueError("LLM returned empty command.")
+
+            logger.info(f"Generated commands: {cleaned_commands}")
+
+            return cleaned_commands
+
         except Exception as e:
             logger.error(f"Command generation failed: {e}")
             raise Exception(f"Failed to generate command: {e}")
@@ -125,33 +118,32 @@ class LLMHandler:
 
                     Command:"""
     
-    def _clean_command_response(self, raw_response: str) -> str:
-        #clean and extract cmd from response
+    def _clean_command_response(self, raw_response: str) -> List[str]:
         response = raw_response.strip()
-        #remove markdown code blocks
+        # Remove markdown and common prefixes
         response = re.sub(r'```(?:bash|sh|shell)?\n?', '', response)
         response = re.sub(r'```', '', response)
-
-        #remove common prefixes
-        prefixes_to_remove = [
-            'Command: ',
-            'command: ',
-            '$ ',
-            'bash: ',
-            'shell: ',
-            '# ',
-        ]
-
+        prefixes_to_remove = ['Command: ', 'command: ', '$ ', '# ']
         for prefix in prefixes_to_remove:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
-        
-        lines = response.split('\n')
-        command = lines[0].strip()
-        
-        command = command.rstrip('.')
-        
-        return command
+        # Remove trailing periods
+        response = response.rstrip('.')
+
+        # Check for JSON structured response
+        try:
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if json_match:
+                parsed = json.loads(json_match.group())
+                if isinstance(parsed, dict) and "commands" in parsed:
+                    return [cmd.strip() for cmd in parsed["commands"] if cmd.strip()]
+        except Exception:
+            pass
+
+        # Split by common multi-command delimiters safely
+        split_commands = re.split(r'\s*;\s*|\s*&&\s*|\s*\|\s*', response)
+        cleaned = [cmd.strip() for cmd in split_commands if cmd.strip()]
+        return cleaned
     
     def generate_detailed_response(self, query: str) -> LLMResponse:
         try:
