@@ -75,7 +75,7 @@ pip install -r requirements.txt
 ### Natural Language CLI:
 
 ```bash
-python aishell.py "list python processes currently running"
+python aishell.py run "list python processes currently running"
 ```
 
 **Example flow:**
