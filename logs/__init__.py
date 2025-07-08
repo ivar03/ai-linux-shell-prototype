@@ -60,29 +60,24 @@ class LogManager:
             ''')
             conn.commit()
     
-    def log_session(self, session_id: str, query: str, command: str, status: str, 
+    def log_session(session_id: str, query: str, command: str, status: str, 
                result: str = "", execution_time: float = 0.0, model_used: str = "",
                safety_warnings: str = "", tags: Optional[List[str]] = None,
                context: Optional[Dict[str, Any]] = None):
         
-        entry = LogEntry(
+        log_manager = get_log_manager()
+        log_manager.log_session(
             session_id=session_id,
-            timestamp=datetime.now().isoformat(),
             query=query,
-            generated_command=command,
+            command=command,
             status=status,
             result=result,
             execution_time=execution_time,
             model_used=model_used,
             safety_warnings=safety_warnings,
-            tags=tags or [],
-            context=context or {}
+            tags=tags,
+            context=context
         )
-        
-        if self.log_format == "sqlite":
-            self._log_to_sqlite(entry)
-        else:
-            self._log_to_json(entry)
     
     def _log_to_sqlite(self, entry: LogEntry):
         try:
@@ -96,7 +91,7 @@ class LogManager:
                     entry.session_id, entry.timestamp, entry.query, 
                     entry.generated_command, entry.status, entry.result,
                     entry.execution_time, entry.model_used, entry.safety_warnings,
-                    json.dumps(entry.tags),  
+                    json.dumps(entry.tags),  # Convert tags to JSON string
                     json.dumps(entry.context)  
                 ))
                 conn.commit()
