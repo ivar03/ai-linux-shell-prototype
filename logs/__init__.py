@@ -60,24 +60,29 @@ class LogManager:
             ''')
             conn.commit()
     
-    def log_session(session_id: str, query: str, command: str, status: str, 
+    def log_session(self, session_id: str, query: str, command: str, status: str, 
                result: str = "", execution_time: float = 0.0, model_used: str = "",
                safety_warnings: str = "", tags: Optional[List[str]] = None,
                context: Optional[Dict[str, Any]] = None):
         
-        log_manager = get_log_manager()
-        log_manager.log_session(
+        entry = LogEntry(
             session_id=session_id,
+            timestamp=datetime.now().isoformat(),
             query=query,
-            command=command,
+            generated_command=command,
             status=status,
             result=result,
             execution_time=execution_time,
             model_used=model_used,
             safety_warnings=safety_warnings,
-            tags=tags,
-            context=context
+            tags=tags or [],
+            context=context or {}
         )
+        
+        if self.log_format == "sqlite":
+            self._log_to_sqlite(entry)
+        else:
+            self._log_to_json(entry)
     
     def _log_to_sqlite(self, entry: LogEntry):
         try:
@@ -92,7 +97,7 @@ class LogManager:
                     entry.generated_command, entry.status, entry.result,
                     entry.execution_time, entry.model_used, entry.safety_warnings,
                     json.dumps(entry.tags),  # Convert tags to JSON string
-                    json.dumps(entry.context)  
+                    json.dumps(entry.context)  # Convert context to JSON string
                 ))
                 conn.commit()
         except Exception as e:
@@ -361,10 +366,22 @@ def setup_logging(verbose: bool = False) -> logging.Logger:
 
 def log_session(session_id: str, query: str, command: str, status: str, 
                result: str = "", execution_time: float = 0.0, model_used: str = "",
-               safety_warnings: str = ""):
-    log_manager = get_log_manager()
-    log_manager.log_session(session_id, query, command, status, result, 
-                           execution_time, model_used, safety_warnings)
+               safety_warnings: str = "", tags: Optional[List[str]] = None,
+               context: Optional[Dict[str, Any]] = None):
+        
+        log_manager = get_log_manager()
+        log_manager.log_session(
+            session_id=session_id,
+            query=query,
+            command=command,
+            status=status,
+            result=result,
+            execution_time=execution_time,
+            model_used=model_used,
+            safety_warnings=safety_warnings,
+            tags=tags,
+            context=context
+        )
 
 def show_history(count: int = 10):
     log_manager = get_log_manager()
