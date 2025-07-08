@@ -1,0 +1,38 @@
+{
+    "critical": [
+        "rm -rf /",
+        ":(){:|:&};:",
+        "mkfs",
+        "dd of=/dev/sd",
+        ">: /etc/passwd",
+        ">: /etc/shadow"
+    ],
+    "high": [
+        "shutdown now",
+        "reboot",
+        "poweroff",
+        "init 0",
+        "init 6",
+        "chmod 777 /",
+        "chown root:root /",
+        "kill -9 1",
+        "killall -9 init",
+        "pkill -9 init"
+    ],
+    "medium": [
+        "wget | sh",
+        "curl | sh",
+        "wget | bash",
+        "curl | bash",
+        "nc -l -e",
+        "socat EXEC"
+    ],
+    "low": [
+        "pkill",
+        "killall",
+        "dd if=",
+        "dd of=",
+        "rmdir",
+        "truncate"
+    ]
+}
