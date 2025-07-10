@@ -4,8 +4,6 @@ from unittest.mock import Mock, patch, MagicMock
 from io import StringIO
 import sys
 
-# Import the module under test
-import commands.context_manager
 from commands.context_manager import collect_full_context, display_context_summary, context_to_json
 
 
@@ -62,7 +60,7 @@ class TestContextManager:
             "pids": []
         }
     
-    @patch('context_manager.resources')
+    @patch('commands.context_manager.resources')
     def test_collect_system_context(self, mock_resources):
         """Test system context collection functionality."""
         # Mock all the resources module functions
@@ -109,7 +107,7 @@ class TestContextManager:
         assert context["mem_status"] == self.mock_mem_status
         assert context["zombie_status"] == self.mock_zombie_status
     
-    @patch('context_manager.resources')
+    @patch('commands.context_manager.resources')
     def test_collect_project_context(self, mock_resources):
         """Test project-specific context collection."""
         # Test different project types
@@ -150,7 +148,7 @@ class TestContextManager:
         assert context["project_context"]["framework"] == "express"
         assert "package.json" in context["project_context"]["files"]
     
-    @patch('context_manager.resources')
+    @patch('commands.context_manager.resources')
     def test_collect_env_context(self, mock_resources):
         """Test environment context collection with different scenarios."""
         # Test production environment
@@ -193,7 +191,7 @@ class TestContextManager:
         assert context["environment_status"]["virtual_env"] is True
         assert "venv_path" in context["environment_status"]
     
-    @patch('context_manager.console')
+    @patch('commands.context_manager.console')
     def test_display_context_summary_output(self, mock_console):
         """Test the display output functionality."""
         # Create a complete context dictionary
@@ -282,7 +280,7 @@ class TestContextManager:
         assert "error" in parsed
         assert "Failed to convert context to JSON" in parsed["error"]
     
-    @patch('context_manager.resources')
+    @patch('commands.context_manager.resources')
     def test_collect_full_context_with_resource_errors(self, mock_resources):
         """Test context collection when resource functions raise exceptions."""
         # Mock one function to raise an exception
@@ -311,7 +309,7 @@ class TestContextManager:
         with pytest.raises(KeyError):
             display_context_summary(incomplete_context)
     
-    @patch('context_manager.console')
+    @patch('commands.context_manager.console')
     def test_display_context_summary_formatting(self, mock_console):
         """Test the specific formatting of the display output."""
         test_context = {

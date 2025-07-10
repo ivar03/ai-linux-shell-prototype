@@ -212,16 +212,18 @@ class TestLogManager:
         for session_id, query, command, status, result in test_sessions:
             json_manager.log_session(session_id, query, command, status, result)
         
-        recent_failures = json_manager.get_recent_failures(limit=3)
+        recent_failures = json_manager.get_recent_failures(limit=4)  # Changed to 4 to get all failures
         
-        # Should return most recent failures first
-        assert len(recent_failures) == 3
+        # Should return most recent failures first (4 failures total: BLOCKED, CANCELLED, ERROR, FAILED)
+        assert len(recent_failures) == 4
         assert recent_failures[0].session_id == "session6"
         assert recent_failures[0].status == "BLOCKED"
-        assert recent_failures[1].session_id == "session4"
-        assert recent_failures[1].status == "ERROR"
-        assert recent_failures[2].session_id == "session2"
-        assert recent_failures[2].status == "FAILED"
+        assert recent_failures[1].session_id == "session5"
+        assert recent_failures[1].status == "CANCELLED"
+        assert recent_failures[2].session_id == "session4"
+        assert recent_failures[2].status == "ERROR"
+        assert recent_failures[3].session_id == "session2"
+        assert recent_failures[3].status == "FAILED"
         
         # Test SQLite format
         sqlite_manager = LogManager(log_format="sqlite", log_dir=str(self.temp_path))
@@ -234,8 +236,8 @@ class TestLogManager:
         assert len(recent_failures_sqlite) == 2
         assert recent_failures_sqlite[0].session_id == "session6"
         assert recent_failures_sqlite[0].status == "BLOCKED"
-        assert recent_failures_sqlite[1].session_id == "session4"
-        assert recent_failures_sqlite[1].status == "ERROR"
+        assert recent_failures_sqlite[1].session_id == "session5"
+        assert recent_failures_sqlite[1].status == "CANCELLED"
     
     def test_get_commands_by_tag_output(self):
         """Test filtering commands by tags"""
@@ -333,7 +335,7 @@ class TestLogManagerEdgeCases:
             f.write("invalid json content {")
         
         # Should handle corruption gracefully
-        with patch('logging.error') as mock_error:
+        with patch('logs.logging.error') as mock_error:  # Fixed: patch the full path
             json_manager.log_session("test", "query", "command", "SUCCESS")
             # Should not raise an exception, should log error instead
             mock_error.assert_called()

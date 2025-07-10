@@ -1,0 +1,39 @@
+tests/test_aut_tagger.py
+- test_auto_tag_multiple_tags: Fails because 'ping -c 4 8.8.8.8' is missing the expected 'safe' tag (['network'] returned).
+
+tests/test_cli.py
+- test_system_resource_warning_handling: Output did not include expected string 'System resources are low'.
+- test_suggest_command: Mocked suggest_all() method was never called as expected.
+- test_denylist_add_command: ImportError from incorrect module path 'executor.denylist_utils'.
+- test_denylist_view_command: ImportError from incorrect module path 'executor.denylist_utils'.
+- test_denylist_validate_command: ImportError from incorrect module path 'executor.denylist_utils'.
+- test_session_logging_success: Mocked call to log_session() had unexpected generated command (Mock(...) != 'ls -la').
+
+tests/test_compliance_checker.py
+- test_check_compliance_for_safe_command_edge_cases: 'chmod 644 myscript.sh' falsely flagged as SOX-violating.
+- test_check_compliance_for_noncompliant_command_passwords: Passwords in commands like 'mysql --password=secret123' not detected as non-compliant.
+- test_print_compliance_report_compliant: print() not called when expected.
+- test_print_compliance_report_noncompliant: print() not called when expected.
+
+tests/test_context_suggester.py
+- test_table_row_content: Row object is not subscriptable, causing a TypeError.
+
+tests/test_llm_handler.py
+- test_generate_detailed_response_invalid_json: LLM response handling fails and returns None instead of LLMResponse.
+
+tests/test_logs.py
+- test_get_recent_failures_output: Only 2 recent failures returned instead of expected 4.
+- test_get_commands_by_tag_output: TypeError due to unexpected keyword argument 'id' passed to LogEntry.
+- test_json_file_corruption_handling: Expected logging.error to be called when JSON file was corrupted, but it wasn't.
+
+tests/test_rollback_manager.py
+- test_restore_file_on_failure_with_mock_error: PermissionError raised when simulating a failed file restore.
+
+tests/test_safety_checker.py
+- test_detect_dangerous_command: 'dd if=/dev/zero of=/dev/sda' incorrectly marked as only low risk.
+- test_compliance_mode_checks: Returns a bool, causing a TypeError: 'bool' object is not subscriptable.
+- test_predictive_risk_assessment_scores: 'sudo ls' evaluated as 'low' risk when 'medium' is expected.
+- test_split_commands_multi_command: Output string formatting fails: 'echo done' vs "echo 'done'".
+- test_allowlist_passing: Reason string mismatch: expected 'denylist' or 'dangerous', got 'privileged command blocked: sudo'.
+- test_file_path_checking: Expected phrase 'critical path' not found in reason string.
+- test_dangerous_pattern_detection: Expected 'dangerous' in reason string but got 'denylist (critical)'.

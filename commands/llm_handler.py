@@ -51,9 +51,9 @@ class LLMHandler:
 
 
         
-    def generate_command(self, query: str, mode: str = "default") -> List[str]:
+    def generate_command(self, query: str, mode: str = "default", context: Optional[Dict] = None) -> List[str]:
         try:
-            system_prompt, user_prompt = self.prompt_generator.generate_contextual_prompt(query, mode=mode)
+            system_prompt, user_prompt = self.prompt_generator.generate_contextual_prompt(query, mode=mode, context=context)
 
             response = self.client.chat(
                 model=self.model,
@@ -81,6 +81,7 @@ class LLMHandler:
         except Exception as e:
             logger.error(f"Command generation failed: {e}")
             raise Exception(f"Failed to generate command: {e}")
+
         
     def _get_system_prompt(self) -> str:
     

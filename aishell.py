@@ -99,10 +99,11 @@ def main(query, run_tests, model, dry_run, verbose, no_confirm, advanced, split_
         all_commands = []
         if split_multi:
             for cmd_str in generated_commands:
-                fragments = safety_checker.split_commands(cmd_str)
+                cleaned_cmd = SafetyChecker.clean_generated_command(cmd_str)
+                fragments = safety_checker.split_commands(cleaned_cmd)
                 all_commands.extend(fragments)
         else:
-            all_commands = generated_commands
+            all_commands = [SafetyChecker.clean_generated_command(cmd) for cmd in generated_commands]
 
         for idx, generated_command in enumerate(all_commands, start=1):
             console.print(Panel(

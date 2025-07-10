@@ -2,6 +2,7 @@ import pytest
 import os
 import shutil
 import tempfile
+import time
 from pathlib import Path
 from unittest.mock import patch, mock_open, MagicMock
 from datetime import datetime
@@ -219,7 +220,7 @@ class TestRollbackManager:
         assert backup_path is not None
         
         # Mock shutil.copy2 to raise an exception
-        with patch('shutil.copy2', side_effect=PermissionError("Permission denied")):
+        with patch('safety.rollback_manager.shutil.copy2', side_effect=PermissionError("Permission denied")):
             restore_success = rollback_manager.restore_file(sample_file)
             # Should handle the exception gracefully and return False
             assert restore_success is False
@@ -335,21 +336,38 @@ class TestRollbackManager:
     def test_timestamp_uniqueness(self, rollback_manager, sample_file):
         """Test that backup timestamps are unique"""
         
-        # Create multiple backups rapidly
+        # Create multiple backups with time delays to ensure uniqueness
         backup_paths = []
-        for _ in range(3):
-            # Create a new manager instance to avoid conflicts
-            backup_path = rollback_manager.backup_file(sample_file)
-            if backup_path:
-                backup_paths.append(backup_path)
         
-        # Should have at least one backup
-        assert len(backup_paths) >= 1
+        # First backup
+        backup_path1 = rollback_manager.backup_file(sample_file)
+        if backup_path1:
+            backup_paths.append(backup_path1)
         
-        # If multiple backups were created, they should have different names
-        if len(backup_paths) > 1:
-            backup_names = [Path(p).name for p in backup_paths]
-            assert len(set(backup_names)) == len(backup_names)  # All unique
+        # Clear the backup registry and wait to ensure different timestamp
+        rollback_manager.backups.clear()
+        time.sleep(1)  # Ensure different timestamp
+        
+        # Second backup
+        backup_path2 = rollback_manager.backup_file(sample_file)
+        if backup_path2:
+            backup_paths.append(backup_path2)
+        
+        # Clear the backup registry and wait to ensure different timestamp
+        rollback_manager.backups.clear()
+        time.sleep(1)  # Ensure different timestamp
+        
+        # Third backup
+        backup_path3 = rollback_manager.backup_file(sample_file)
+        if backup_path3:
+            backup_paths.append(backup_path3)
+        
+        # Should have created all backups
+        assert len(backup_paths) == 3
+        
+        # All backup names should be unique
+        backup_names = [Path(p).name for p in backup_paths]
+        assert len(set(backup_names)) == len(backup_names)  # All unique
 
     def test_backup_preserves_file_metadata(self, rollback_manager, sample_file):
         """Test that backup preserves file metadata (timestamps, permissions)"""

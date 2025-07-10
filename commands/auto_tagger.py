@@ -7,7 +7,7 @@ SAFE_COMMANDS = [
 ]
 
 CLEANUP_KEYWORDS = [
-    "rm", "clean", "delete", "purge", "prune", "wipe", "rmdir", "trash"
+    "rm", "clean", "delete", "purge", "prune", "wipe", "rmdir", "trash", "autoremove"
 ]
 
 MONITORING_KEYWORDS = [
@@ -19,7 +19,7 @@ NETWORK_KEYWORDS = [
 ]
 
 INSTALL_KEYWORDS = [
-    "install", "update", "upgrade", "apt", "yum", "dnf", "pacman", "brew"
+    "install", "update", "upgrade", "apt", "yum", "dnf", "pacman", "brew", "pip", "npm"
 ]
 
 BACKUP_KEYWORDS = [
@@ -35,33 +35,34 @@ def auto_tag(query: str, command: str) -> List[str]:
     tags = []
     cmd_lower = command.lower()
     query_lower = query.lower()
+    combined_text = f"{query_lower} {cmd_lower}"
 
     # Safety tags
     if any(cmd_lower.startswith(cmd) for cmd in SAFE_COMMANDS + READ_ONLY_COMMANDS):
         tags.append("safe")
 
     # Cleanup
-    if any(kw in cmd_lower for kw in CLEANUP_KEYWORDS):
+    if any(kw in combined_text for kw in CLEANUP_KEYWORDS):
         tags.append("cleanup")
 
     # Monitoring
-    if any(kw in cmd_lower for kw in MONITORING_KEYWORDS):
+    if any(kw in combined_text for kw in MONITORING_KEYWORDS):
         tags.append("monitoring")
 
     # Network
-    if any(kw in cmd_lower for kw in NETWORK_KEYWORDS):
+    if any(kw in combined_text for kw in NETWORK_KEYWORDS):
         tags.append("network")
 
     # Install / Update
-    if any(kw in cmd_lower or kw in query_lower for kw in INSTALL_KEYWORDS):
+    if any(kw in combined_text for kw in INSTALL_KEYWORDS):
         tags.append("install")
 
     # Backup / Copy
-    if any(kw in cmd_lower or kw in query_lower for kw in BACKUP_KEYWORDS):
+    if any(kw in combined_text for kw in BACKUP_KEYWORDS):
         tags.append("backup")
 
     # Resource-intensive commands (example: compile/build)
-    if any(kw in cmd_lower for kw in ["make", "build", "compile"]):
+    if any(kw in combined_text for kw in ["make", "build", "compile", "gcc", "mvn"]):
         tags.append("resource-intensive")
 
     # Add unique tags only

@@ -26,7 +26,7 @@ class SafetyResult:
 
 class SafetyChecker:
     def __init__(self, config: Optional[Dict] = None):
-        self.config = config or self._get_default_config()
+        self.config = {**self._get_default_config(), **(config or {})}
         self.denylist = self._load_denylist()
         self.privilege_commands = self._load_privilege_commands()
         self.destructive_commands = self._load_destructive_commands()
@@ -44,6 +44,24 @@ class SafetyChecker:
             "warn_on_wildcards": True,
             "compliance_mode": False,
         }
+    
+    def _check_critical_paths(self, command):
+        """Check for operations on critical system paths."""
+        critical_paths = [
+            "/etc/passwd", "/etc/shadow", "/boot/", "/usr/bin/", "/sbin/",
+            "/lib/", "/usr/lib/", "/proc/", "/sys/"
+        ]
+        
+        for path in critical_paths:
+            if path in command:
+                return SafetyResult(
+                    is_safe=False,
+                    risk_level="high",
+                    reason=f"Operation on critical path: {path}",
+                    blocked_patterns=[path]
+                )
+        
+        return None
 
     def _load_denylist(self) -> Dict[str, List[str]]:
         default_path = Path(__file__).parent / "denylist.json"
@@ -97,7 +115,7 @@ class SafetyChecker:
                 reason=f"Invalid syntax: {syntax_msg}"
             )
 
-        if len(command) > self.config["max_command_length"]:
+        if len(command) > self.config.get("max_command_length", 1000):
             return SafetyResult(
                 is_safe=False,
                 risk_level=RiskLevel.MEDIUM.value,
@@ -132,6 +150,7 @@ class SafetyChecker:
         wildcard_check = self._check_wildcards(command)
         if not wildcard_check.is_safe:
             return wildcard_check
+
         
         # Predictive Risk Assessment
         predictive_check = self.predictive_risk_assessment(command)
@@ -139,9 +158,9 @@ class SafetyChecker:
             return predictive_check
 
         # Compliance Check
-        compliance_check = self.compliance_check(command, compliance_mode=self.config.get("compliance_mode", False))
-        if not compliance_check.is_safe:
-            return compliance_check
+        compliance_result = self.run_compliance_check(command, compliance_mode=self.config.get("compliance_mode", False))
+        if not compliance_result.is_safe:
+            return compliance_result
 
         return SafetyResult(
             is_safe=True,
@@ -317,7 +336,7 @@ class SafetyChecker:
         else:
             return SafetyResult(True, RiskLevel.LOW.value, "Predictive Risk Assessment: Low risk.")
 
-    def compliance_check(self, command: str, compliance_mode: bool = False) -> SafetyResult:
+    def run_compliance_check(self, command: str, compliance_mode: bool = False) -> SafetyResult:
         if not compliance_mode:
             return SafetyResult(True, RiskLevel.LOW.value, "Compliance mode not enabled.")
 
@@ -328,3 +347,47 @@ class SafetyChecker:
             failure_messages = "; ".join(f["description"] for f in failures)
             return SafetyResult(False, RiskLevel.HIGH.value, f"Compliance check failed: {failure_messages}")
 
+    def detect_files_for_backup(self, command: str) -> list:
+        candidates = []
+        try:
+            tokens = shlex.split(command)
+        except Exception:
+            return []
+
+        destructive_keywords = {"rm", "mv", "cp", "dd", "truncate", "shred", "wipe", "chmod", "chown", "chgrp"}
+
+        if not tokens:
+            return []
+
+        first = tokens[0]
+        if first not in destructive_keywords:
+            return []
+
+        for token in tokens[1:]:
+            if token.startswith('-'):
+                continue  # skip flags
+            # handle dd syntax like 'of=/dev/sda'
+            if '=' in token:
+                potential_path = token.split('=')[1]
+            else:
+                potential_path = token
+
+            path = Path(potential_path).expanduser().resolve()
+            if path.exists() and path.is_file():
+                candidates.append(str(path))
+
+        # Deduplicate
+        return list(set(candidates))
+    
+    def clean_generated_command(cmd: str) -> str:
+        # Remove triple backticks and backticks
+        cmd = cmd.strip()
+        cmd = re.sub(r"^```.*\n", "", cmd)  # Remove ```lang headers
+        cmd = cmd.replace("```", "")
+        cmd = cmd.replace("`", "")
+
+        # Strip surrounding quotes if entire command is quoted
+        if (cmd.startswith('"') and cmd.endswith('"')) or (cmd.startswith("'") and cmd.endswith("'")):
+            cmd = cmd[1:-1]
+
+        return cmd.strip()

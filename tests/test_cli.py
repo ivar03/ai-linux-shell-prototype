@@ -7,7 +7,6 @@ import sys
 from io import StringIO
 
 # Import the main CLI module
-import aishell
 from aishell import main, cli, suggest, denylist, history, models
 
 # Mock data for testing
@@ -39,36 +38,46 @@ def runner():
 @pytest.fixture
 def mock_dependencies():
     """Mock all external dependencies."""
-    with patch.multiple(
-        'aishell',
-        LLMHandler=Mock(),
-        SafetyChecker=Mock(),
-        CommandRunner=Mock(),
-        context_manager=Mock(),
-        context_suggester=Mock(),
-        auto_tagger=Mock(),
-        resources=Mock(),
-        setup_logging=Mock(),
-        log_session=Mock(),
-        rollback_manager=Mock()
-    ) as mocks:
-        # Configure common mock behaviors
-        mocks['LLMHandler'].return_value.generate_command.return_value = ["ls -la"]
-        mocks['SafetyChecker'].return_value.check_command.return_value = MOCK_SAFETY_RESULT
-        mocks['SafetyChecker'].return_value.detect_files_for_backup.return_value = []
-        mocks['CommandRunner'].return_value.execute.return_value = MOCK_EXECUTION_RESULT
-        mocks['context_manager'].collect_full_context.return_value = MOCK_CONTEXT_DATA
-        mocks['auto_tagger'].auto_tag.return_value = ['filesystem', 'list']
-        mocks['setup_logging'].return_value = Mock()
-        
-        # Mock resource checks to return OK status
-        mock_status = {"ok": True, "message": "All good"}
-        mocks['resources'].check_disk_usage.return_value = mock_status
-        mocks['resources'].check_cpu_usage.return_value = mock_status
-        mocks['resources'].check_memory_usage.return_value = mock_status
-        mocks['resources'].check_zombie_processes.return_value = mock_status
-        
-        yield mocks
+    # Mock individual modules instead of using patch.multiple on 'aishell'
+    patches = [
+        patch('aishell.LLMHandler', Mock()),
+        patch('aishell.SafetyChecker', Mock()),
+        patch('aishell.CommandRunner', Mock()),
+        patch('aishell.context_manager', Mock()),
+        patch('aishell.context_suggester', Mock()),
+        patch('aishell.auto_tagger', Mock()),
+        patch('aishell.resources', Mock()),
+        patch('aishell.setup_logging', Mock()),
+        patch('aishell.log_session', Mock()),
+        patch('aishell.rollback_manager', Mock())
+    ]
+    
+    mocks = {}
+    for p in patches:
+        mock = p.start()
+        mocks[p.attribute] = mock
+    
+    # Configure common mock behaviors
+    mocks['LLMHandler'].return_value.generate_command.return_value = ["ls -la"]
+    mocks['SafetyChecker'].return_value.check_command.return_value = MOCK_SAFETY_RESULT
+    mocks['SafetyChecker'].return_value.detect_files_for_backup.return_value = []
+    mocks['CommandRunner'].return_value.execute.return_value = MOCK_EXECUTION_RESULT
+    mocks['context_manager'].collect_full_context.return_value = MOCK_CONTEXT_DATA
+    mocks['auto_tagger'].auto_tag.return_value = ['filesystem', 'list']
+    mocks['setup_logging'].return_value = Mock()
+    
+    # Mock resource checks to return OK status
+    mock_status = {"ok": True, "message": "All good"}
+    mocks['resources'].check_disk_usage.return_value = mock_status
+    mocks['resources'].check_cpu_usage.return_value = mock_status
+    mocks['resources'].check_memory_usage.return_value = mock_status
+    mocks['resources'].check_zombie_processes.return_value = mock_status
+    
+    yield mocks
+    
+    # Clean up patches
+    for p in patches:
+        p.stop()
 
 class TestCLI:
     """Test suite for the main CLI functionality."""
@@ -260,30 +269,28 @@ class TestCLICommands:
     
     def test_denylist_add_command(self, runner):
         """Test adding to denylist."""
-        with patch('executor.denylist_utils.add') as mock_add:
-            mock_add.callback = Mock()
+        # Fix the module path - it should be 'executor.denylist_util' not 'executor.denylist_utils'
+        with patch('executor.denylist_util.add') as mock_add:
             result = runner.invoke(denylist, ['add', 'high', 'rm -rf'])
             
             assert result.exit_code == 0
-            mock_add.callback.assert_called_once_with('high', 'rm -rf')
+            mock_add.assert_called_once_with('high', 'rm -rf')
     
     def test_denylist_view_command(self, runner):
         """Test viewing denylist."""
-        with patch('executor.denylist_utils.view') as mock_view:
-            mock_view.callback = Mock()
+        with patch('executor.denylist_util.view') as mock_view:
             result = runner.invoke(denylist, ['view'])
             
             assert result.exit_code == 0
-            mock_view.callback.assert_called_once()
+            mock_view.assert_called_once()
     
     def test_denylist_validate_command(self, runner):
         """Test validating denylist."""
-        with patch('executor.denylist_utils.validate') as mock_validate:
-            mock_validate.callback = Mock()
+        with patch('executor.denylist_util.validate') as mock_validate:
             result = runner.invoke(denylist, ['validate'])
             
             assert result.exit_code == 0
-            mock_validate.callback.assert_called_once()
+            mock_validate.assert_called_once()
     
     def test_history_command(self, runner):
         """Test history command."""

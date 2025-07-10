@@ -3,8 +3,6 @@ from unittest.mock import Mock, patch, MagicMock, call
 from io import StringIO
 import sys
 
-# Import the module under test
-import commands.context_suggester
 from commands.context_suggester import suggest_frequent_commands, suggest_safe_automations, suggest_all
 
 
@@ -43,8 +41,8 @@ class TestContextSuggester:
             "git push origin main"
         ]
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_frequent_commands(self, mock_console, mock_log_manager_class):
         """Test frequent commands suggestion functionality."""
         # Test with default limit (5)
@@ -78,8 +76,8 @@ class TestContextSuggester:
         assert table.columns[0].width == 5
         assert table.columns[1].style == "green"
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_frequent_commands_with_custom_limit(self, mock_console, mock_log_manager_class):
         """Test frequent commands suggestion with custom limit."""
         mock_log_manager = Mock()
@@ -94,8 +92,8 @@ class TestContextSuggester:
         # Verify console.print was called
         mock_console.print.assert_called_once()
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_frequent_commands_no_commands(self, mock_console, mock_log_manager_class):
         """Test frequent commands suggestion when no commands are available."""
         mock_log_manager = Mock()
@@ -107,8 +105,8 @@ class TestContextSuggester:
         # Verify the warning message was printed
         mock_console.print.assert_called_once_with("[yellow]No frequent commands found yet.[/yellow]")
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_frequent_commands_none_returned(self, mock_console, mock_log_manager_class):
         """Test frequent commands suggestion when None is returned."""
         mock_log_manager = Mock()
@@ -120,8 +118,8 @@ class TestContextSuggester:
         # Verify the warning message was printed
         mock_console.print.assert_called_once_with("[yellow]No frequent commands found yet.[/yellow]")
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_safe_automations(self, mock_console, mock_log_manager_class):
         """Test safe automation suggestions functionality."""
         mock_log_manager = Mock()
@@ -154,8 +152,8 @@ class TestContextSuggester:
         assert table.columns[0].width == 5
         assert table.columns[1].style == "green"
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_safe_automations_filtering(self, mock_console, mock_log_manager_class):
         """Test that safe automation suggestions properly filter commands."""
         mock_log_manager = Mock()
@@ -186,8 +184,8 @@ class TestContextSuggester:
         assert hasattr(table, 'title')
         assert table.title == "⚡ Safe Automation Suggestions"
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_safe_automations_no_safe_commands(self, mock_console, mock_log_manager_class):
         """Test safe automation suggestions when no safe commands are available."""
         mock_log_manager = Mock()
@@ -208,8 +206,8 @@ class TestContextSuggester:
         # Verify the warning message was printed
         mock_console.print.assert_called_once_with("[yellow]No safe automation suggestions at this time.[/yellow]")
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_safe_automations_no_commands(self, mock_console, mock_log_manager_class):
         """Test safe automation suggestions when no commands are available."""
         mock_log_manager = Mock()
@@ -221,8 +219,8 @@ class TestContextSuggester:
         # Verify the warning message was printed
         mock_console.print.assert_called_once_with("[yellow]No commands available for automation suggestions.[/yellow]")
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_suggest_safe_automations_with_custom_limit(self, mock_console, mock_log_manager_class):
         """Test safe automation suggestions with custom limit."""
         mock_log_manager = Mock()
@@ -237,9 +235,9 @@ class TestContextSuggester:
         # Verify console.print was called
         mock_console.print.assert_called_once()
     
-    @patch('context_suggester.suggest_frequent_commands')
-    @patch('context_suggester.suggest_safe_automations')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.suggest_frequent_commands')
+    @patch('commands.context_suggester.suggest_safe_automations')
+    @patch('commands.context_suggester.console')
     def test_suggest_all_combined_output(self, mock_console, mock_suggest_safe, mock_suggest_frequent):
         """Test the combined output of suggest_all function."""
         suggest_all()
@@ -261,8 +259,8 @@ class TestContextSuggester:
         mock_suggest_frequent.assert_called_once()
         mock_suggest_safe.assert_called_once()
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_safe_commands_list_coverage(self, mock_console, mock_log_manager_class):
         """Test that the safe commands list covers expected read-only commands."""
         mock_log_manager = Mock()
@@ -315,8 +313,8 @@ class TestContextSuggester:
         assert hasattr(table, 'title')
         assert table.title == "⚡ Safe Automation Suggestions"
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_command_filtering_edge_cases(self, mock_console, mock_log_manager_class):
         """Test edge cases in command filtering."""
         mock_log_manager = Mock()
@@ -346,8 +344,8 @@ class TestContextSuggester:
         assert hasattr(table, 'title')
         assert table.title == "⚡ Safe Automation Suggestions"
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_log_manager_exception_handling(self, mock_console, mock_log_manager_class):
         """Test behavior when LogManager raises exceptions."""
         mock_log_manager = Mock()
@@ -363,8 +361,8 @@ class TestContextSuggester:
         with pytest.raises(Exception, match="Database connection failed"):
             suggest_safe_automations()
     
-    @patch('context_suggester.LogManager')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.LogManager')
+    @patch('commands.context_suggester.console')
     def test_table_row_content(self, mock_console, mock_log_manager_class):
         """Test that table rows contain the expected content."""
         mock_log_manager = Mock()
@@ -389,9 +387,9 @@ class TestContextSuggester:
             assert row[0] == str(i + 1)  # Row number
             assert row[1] == cmd         # Command
     
-    @patch('context_suggester.suggest_frequent_commands')
-    @patch('context_suggester.suggest_safe_automations')
-    @patch('context_suggester.console')
+    @patch('commands.context_suggester.suggest_frequent_commands')
+    @patch('commands.context_suggester.suggest_safe_automations')
+    @patch('commands.context_suggester.console')
     def test_suggest_all_function_call_order(self, mock_console, mock_suggest_safe, mock_suggest_frequent):
         """Test that suggest_all calls functions in the correct order."""
         suggest_all()

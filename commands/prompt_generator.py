@@ -1,7 +1,7 @@
 import platform
 import os
 import shutil
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -107,7 +107,31 @@ class PromptGenerator:
             f"Command:"
         )
 
-    def generate_contextual_prompt(self, query: str, previous_commands: List[str] = None, mode: str = "default") -> Tuple[str, str]:
+    def generate_contextual_prompt(
+        self,
+        query: str,
+        previous_commands: Optional[List[str]] = None,
+        mode: str = "default",
+        context: Optional[Union[SystemContext, Dict]] = None
+    ) -> Tuple[str, str]:
+        # If external context provided, override
+        if context:
+            if isinstance(context, SystemContext):
+                self.system_context = context
+            elif isinstance(context, dict):
+                # Build SystemContext safely from partial dict
+                self.system_context = SystemContext(
+                    os_name=context.get("os_name", self.system_context.os_name),
+                    distribution=context.get("distribution", self.system_context.distribution),
+                    shell=context.get("shell", self.system_context.shell),
+                    available_tools=context.get("available_tools", self.system_context.available_tools),
+                    current_dir=context.get("current_dir", self.system_context.current_dir),
+                    user=context.get("user", self.system_context.user),
+                    permissions=context.get("permissions", self.system_context.permissions)
+                )
+            else:
+                raise ValueError("Context must be a SystemContext or a Dict with valid keys.")
+
         category = self.detect_query_category(query)
         system_prompt = self.generate_system_prompt(category, mode=mode)
         user_prompt = self.generate_user_prompt(query)
