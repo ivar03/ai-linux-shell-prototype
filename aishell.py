@@ -23,6 +23,7 @@ console = Console()
 
 @click.command()
 @click.argument('query', required=True)
+@click.option('--test', 'run_tests', is_flag=True, help='Run the full AI Shell test suite and exit.')
 @click.option('--model', '-m', default='llama3.2:3b', help='Ollama model to use')
 @click.option('--dry-run', '-d', is_flag=True, help='Show command without executing')
 @click.option('--verbose', '-v', is_flag=True, help='Verbose output')
@@ -32,7 +33,7 @@ console = Console()
 @click.option('--auto-suggest', is_flag=True, help='Show contextual suggestions on launch')
 @click.option('--compliance-mode', is_flag=True, help='Enable compliance checks (SOX, HIPAA)')
 @click.version_option(version='0.1.0')
-def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto_suggest, compliance_mode):
+def main(query, run_tests, model, dry_run, verbose, no_confirm, advanced, split_multi, auto_suggest, compliance_mode):
     logger = setup_logging(verbose)
     session_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     rbm = rollback_manager.RollbackManager()
@@ -41,6 +42,12 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
         if auto_suggest:
             context_suggester.suggest_all()
             console.print()
+
+        if run_tests:
+            console.print("[green]Running test suite...[/green]")
+            import subprocess
+            result = subprocess.run(['pytest', 'tests/', '-v'], capture_output=False)
+            sys.exit(result.returncode)
 
         llm_handler = LLMHandler(model=model)
         safety_checker = SafetyChecker()
@@ -271,6 +278,14 @@ def validate():
 def history(count):
     from logs import show_history
     show_history(count)
+
+@cli.command()
+def test():
+    """Run the AI Shell CLI test suite."""
+    import subprocess
+    console.print("[green]Running test suite...[/green]")
+    result = subprocess.run(['pytest', 'tests/', '-v'])
+    sys.exit(result.returncode)
 
 @cli.command()
 def models():

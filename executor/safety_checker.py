@@ -321,8 +321,10 @@ class SafetyChecker:
         if not compliance_mode:
             return SafetyResult(True, RiskLevel.LOW.value, "Compliance mode not enabled.")
 
-        compliant, message = compliance_checker.check_compliance(command)
-        if compliant:
+        failures = compliance_checker.check_compliance(command)
+        if not failures:
             return SafetyResult(True, RiskLevel.LOW.value, "Command compliant with policies.")
         else:
-            return SafetyResult(False, RiskLevel.HIGH.value, f"Compliance check failed: {message}")
+            failure_messages = "; ".join(f["description"] for f in failures)
+            return SafetyResult(False, RiskLevel.HIGH.value, f"Compliance check failed: {failure_messages}")
+
