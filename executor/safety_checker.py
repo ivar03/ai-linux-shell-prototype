@@ -6,6 +6,7 @@ from enum import Enum
 import shlex
 import json
 from pathlib import Path
+from compliance import checker as compliance_checker
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,8 @@ class SafetyChecker:
             "allow_network": True,
             "max_command_length": 1000,
             "check_file_paths": True,
-            "warn_on_wildcards": True
+            "warn_on_wildcards": True,
+            "compliance_mode": False,
         }
 
     def _load_denylist(self) -> Dict[str, List[str]]:
@@ -130,6 +132,16 @@ class SafetyChecker:
         wildcard_check = self._check_wildcards(command)
         if not wildcard_check.is_safe:
             return wildcard_check
+        
+        # Predictive Risk Assessment
+        predictive_check = self.predictive_risk_assessment(command)
+        if not predictive_check.is_safe:
+            return predictive_check
+
+        # Compliance Check
+        compliance_check = self.compliance_check(command, compliance_mode=self.config.get("compliance_mode", False))
+        if not compliance_check.is_safe:
+            return compliance_check
 
         return SafetyResult(
             is_safe=True,
@@ -277,3 +289,40 @@ class SafetyChecker:
             return True, "Syntax OK"
         except ValueError as e:
             return False, str(e)
+        
+    def predictive_risk_assessment(self, command: str, context: Optional[Dict] = None) -> SafetyResult:
+        #todo: have to change to a custom model for this risk assesment
+        risk_score = 0
+        lowered = command.lower()
+
+        if "rm " in lowered or "dd " in lowered:
+            risk_score += 3
+        if "sudo" in lowered:
+            risk_score += 2
+        if "|" in lowered and "sh" in lowered:
+            risk_score += 4
+        if any(word in lowered for word in ["mkfs", "fdisk", "shutdown"]):
+            risk_score += 5
+        if context:
+            disk = context.get("disk_status", {})
+            if not disk.get("ok", True):
+                risk_score += 2
+
+        if risk_score >= 8:
+            return SafetyResult(False, RiskLevel.CRITICAL.value, "Predictive Risk Assessment: Command too risky.")
+        elif risk_score >= 5:
+            return SafetyResult(False, RiskLevel.HIGH.value, "Predictive Risk Assessment: High-risk command.")
+        elif risk_score >= 3:
+            return SafetyResult(True, RiskLevel.MEDIUM.value, "Predictive Risk Assessment: Medium risk.")
+        else:
+            return SafetyResult(True, RiskLevel.LOW.value, "Predictive Risk Assessment: Low risk.")
+
+    def compliance_check(self, command: str, compliance_mode: bool = False) -> SafetyResult:
+        if not compliance_mode:
+            return SafetyResult(True, RiskLevel.LOW.value, "Compliance mode not enabled.")
+
+        compliant, message = compliance_checker.check_compliance(command)
+        if compliant:
+            return SafetyResult(True, RiskLevel.LOW.value, "Command compliant with policies.")
+        else:
+            return SafetyResult(False, RiskLevel.HIGH.value, f"Compliance check failed: {message}")

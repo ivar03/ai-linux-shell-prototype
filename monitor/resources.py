@@ -1,6 +1,7 @@
 import psutil
 import shutil
 import os
+import socket
 from typing import Dict, Any, List
 
 def check_disk_usage(threshold: float = 10.0) -> Dict[str, Any]:
@@ -64,3 +65,76 @@ def check_zombie_processes() -> Dict[str, Any]:
         status["warning"] = f"Detected {len(zombies)} zombie processes."
         status["zombies"] = zombies
     return status
+
+def check_running_process_summary(limit: int = 5) -> Dict[str, Any]:
+    """Return a summary of top running processes by CPU usage"""
+    procs = []
+    for proc in psutil.process_iter(attrs=['pid', 'name', 'cpu_percent']):
+        try:
+            procs.append(proc.info)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+    procs = sorted(procs, key=lambda x: x['cpu_percent'], reverse=True)[:limit]
+    return {
+        "ok": True,
+        "top_processes": procs,
+        "message": f"Top {limit} processes by CPU usage collected."
+    }
+
+def check_network_connections(limit: int = 5) -> Dict[str, Any]:
+    """Check for active network connections"""
+    try:
+        connections = psutil.net_connections(kind='inet')
+        conns_summary = []
+        for conn in connections[:limit]:
+            conns_summary.append({
+                "fd": conn.fd,
+                "family": str(conn.family),
+                "type": str(conn.type),
+                "laddr": conn.laddr.ip if conn.laddr else None,
+                "raddr": conn.raddr.ip if conn.raddr else None,
+                "status": conn.status
+            })
+        return {
+            "ok": True,
+            "connections_summary": conns_summary,
+            "message": f"Collected {min(limit, len(connections))} active network connections."
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "message": f"Failed to collect network connections: {e}"
+        }
+
+def detect_project_context() -> Dict[str, Any]:
+    """Detect if inside a Git repo, Docker project, Node.js project"""
+    cwd = os.getcwd()
+    context = {
+        "git_repo": os.path.isdir(os.path.join(cwd, ".git")),
+        "docker_project": os.path.isfile(os.path.join(cwd, "docker-compose.yml")),
+        "node_project": os.path.isfile(os.path.join(cwd, "package.json")),
+    }
+    detected = []
+    if context["git_repo"]:
+        detected.append("Git repository")
+    if context["docker_project"]:
+        detected.append("Docker project")
+    if context["node_project"]:
+        detected.append("Node.js project")
+    return {
+        "ok": any(context.values()),
+        "context": context,
+        "message": f"Detected: {', '.join(detected) if detected else 'No project context'}"
+    }
+
+def detect_environment() -> Dict[str, Any]:
+    """Detect if running in dev vs prod environment"""
+    env = os.environ.get("ENV", "development").lower()
+    hostname = socket.gethostname()
+    detected_env = "production" if env == "production" else "development"
+    return {
+        "ok": True,
+        "environment": detected_env,
+        "hostname": hostname,
+        "message": f"Environment detected: {detected_env}, Host: {hostname}"
+    }

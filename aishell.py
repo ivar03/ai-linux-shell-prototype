@@ -3,22 +3,21 @@
 
 import click
 import sys
-import json
 import datetime
-from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
-from rich.text import Text
 from rich.prompt import Prompt, Confirm
 
 # Local imports
 from commands.llm_handler import LLMHandler
 from commands import context_suggester
+from commands import context_manager
 from commands import auto_tagger
 from executor.safety_checker import SafetyChecker
 from executor.command_runner import CommandRunner
 from monitor import resources
 from logs import setup_logging, log_session
+from safety import rollback_manager
 
 console = Console()
 
@@ -31,10 +30,12 @@ console = Console()
 @click.option('--advanced', '-a', is_flag=True, help='Use advanced prompt engineering')
 @click.option('--split-multi', '-s', is_flag=True, help='Enable splitting of multi-command outputs')
 @click.option('--auto-suggest', is_flag=True, help='Show contextual suggestions on launch')
+@click.option('--compliance-mode', is_flag=True, help='Enable compliance checks (SOX, HIPAA)')
 @click.version_option(version='0.1.0')
-def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto_suggest):
+def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto_suggest, compliance_mode):
     logger = setup_logging(verbose)
     session_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    rbm = rollback_manager.RollbackManager()
 
     try:
         if auto_suggest:
@@ -51,7 +52,14 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
             border_style="cyan"
         ))
 
-        # System Resource Checks before heavy execution
+        #context manager for context 
+        context_data = context_manager.collect_full_context()
+        context_manager.display_context_summary(context_data)
+
+        # Configure SafetyChecker with compliance mode
+        safety_checker = SafetyChecker(config={"compliance_mode": compliance_mode})
+
+        # System Resource Checks
         console.print("[blue]Checking system resources...[/blue]")
         disk_status = resources.check_disk_usage()
         cpu_status = resources.check_cpu_usage()
@@ -75,7 +83,7 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
         console.print("Generating command...", style="yellow")
         try:
             mode = "advanced" if advanced else "default"
-            generated_commands = llm_handler.generate_command(query, mode=mode)
+            generated_commands = llm_handler.generate_command(query, mode=mode, context=context_data)
         except Exception as e:
             console.print(f"[red]Error generating command:[/red] {e}")
             logger.error(f"LLM generation failed: {e}")
@@ -118,14 +126,14 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
 
                     if safety_result.risk_level in ["critical", "high"]:
                         console.print("[red]Command blocked due to critical/high risk.[/red]")
-                        log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason, tags=tags)
+                        log_session(session_id, query, generated_command, "BLOCKED", safety_result.reason, tags=tags, context=context_data)
                         break
                     else:
                         console.print("[yellow]Warning: Proceed with caution.[/yellow]")
 
                 if dry_run:
                     console.print("[yellow]Dry run mode - command not executed.[/yellow]")
-                    log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason, tags=tags)
+                    log_session(session_id, query, generated_command, "DRY_RUN", safety_result.reason, tags=tags, context=context_data)
                     break
 
                 execute = False
@@ -143,7 +151,7 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
 
                     if choice == "n":
                         console.print("[red]Command skipped by user.[/red]")
-                        log_session(session_id, query, generated_command, "SKIPPED", "User skipped", tags=tags)
+                        log_session(session_id, query, generated_command, "SKIPPED", "User skipped", tags=tags, context=context_data)
                         break
                     elif choice == "e":
                         generated_command = Prompt.ask(
@@ -170,6 +178,12 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
                         execute = True
 
                 if execute:
+                    files_to_backup = safety_checker.detect_files_for_backup(generated_command)
+                    if files_to_backup:
+                        backed_up = rbm.backup_files(files_to_backup)
+                        if backed_up:
+                            console.print(f"[yellow]Backups created before execution for rollback safety.[/yellow]")
+
                     console.print("[green]Executing command...[/green]")
                     try:
                         result = command_runner.execute(generated_command)
@@ -186,7 +200,8 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
                                 console.print(Panel(result.stdout, title="Output", border_style="blue"))
                             if result.stderr and verbose:
                                 console.print(Panel(result.stderr, title="Stderr", border_style="yellow"))
-                            log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500], execution_time=result.execution_time, model_used=model, tags=tags)
+                            log_session(session_id, query, generated_command, "SUCCESS", result.stdout[:500], execution_time=result.execution_time, model_used=model, tags=tags, context=context_data)
+                            rbm.clear_backups()
                         else:
                             console.print(Panel(
                                 f"[bold red]Command failed[/bold red]\n"
@@ -195,13 +210,15 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
                                 title="Execution Failed",
                                 border_style="red"
                             ))
-                            log_session(session_id, query, generated_command, "FAILED", result.stderr, tags=tags)
+                            log_session(session_id, query, generated_command, "FAILED", result.stderr, tags=tags, context=context_data)
+                            rbm.restore_all()
                         break
 
                     except Exception as e:
                         console.print(f"[red]Execution error:[/red] {e}")
                         logger.error(f"Execution failed: {e}")
-                        log_session(session_id, query, generated_command, "ERROR", str(e), tags=tags)
+                        log_session(session_id, query, generated_command, "ERROR", str(e), tags=tags, context=context_data)
+                        rbm.restore_all()
                         break
 
     except KeyboardInterrupt:
@@ -211,6 +228,7 @@ def main(query, model, dry_run, verbose, no_confirm, advanced, split_multi, auto
         console.print(f"[red]Unexpected error:[/red] {e}")
         logger.error(f"Unexpected error: {e}")
         sys.exit(1)
+
 @click.group()
 def cli():
     pass
