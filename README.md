@@ -188,9 +188,11 @@ Upcoming features:
 
 ### Compliance Reporting
 - Generate structured compliance execution reports:
+
   ```bash
     aishell compliance report
   ```
+
 - Reports will include:
 - Commands run.
 - Risk levels.
@@ -218,6 +220,7 @@ Upcoming features:
 ### Remote Execution
 - SSH integration for executing generated commands on remote machines with confirmation workflows.
 - Manage multiple server profiles with:
+
   ```bash
     aishell remote add
   ```
