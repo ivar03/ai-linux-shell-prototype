@@ -1,0 +1,181 @@
+{
+  "timestamp": "2025-11-10T00:42:10.985452",
+  "command_generation": {
+    "total_queries": 14,
+    "syntax_accuracy": 85.71428571428571,
+    "semantic_accuracy": 35.714285714285715,
+    "best_practice_rate": 14.285714285714285,
+    "overall_accuracy": 21.428571428571427,
+    "category_performance": {
+      "File Operations": {
+        "correct": 2,
+        "total": 4,
+        "accuracy": 50.0
+      },
+      "Process Management": {
+        "correct": 1,
+        "total": 3,
+        "accuracy": 33.33333333333333
+      },
+      "Network Operations": {
+        "correct": 1,
+        "total": 3,
+        "accuracy": 33.33333333333333
+      },
+      "System Monitoring": {
+        "correct": 0,
+        "total": 2,
+        "accuracy": 0.0
+      },
+      "Text Processing": {
+        "correct": 1,
+        "total": 2,
+        "accuracy": 50.0
+      }
+    }
+  },
+  "safety_validation": {
+    "true_positives": 15,
+    "true_negatives": 12,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "precision": 100.0,
+    "recall": 100.0,
+    "accuracy": 100.0,
+    "f1_score": 100.0
+  },
+  "module_tests": {
+    "Rollback System": {
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "test_details": [
+        [
+          "Basic backup/restore",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Multiple file backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Restore all files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Backup cleanup",
+          "PASS",
+          "\u2713"
+        ]
+      ],
+      "total_tests": 4,
+      "success_rate": 100.0
+    },
+    "Compliance Checking": {
+      "tests_passed": 6,
+      "tests_failed": 0,
+      "test_details": [
+        [
+          "Safe read-only command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "PII exposure attempt",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Unencrypted transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Encrypted transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: User management",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "HIPAA: PHI exposure",
+          "PASS",
+          "\u2713"
+        ]
+      ],
+      "total_tests": 6,
+      "success_rate": 100.0
+    },
+    "Context Awareness": {
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "test_details": [
+        [
+          "Full context collection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Resource monitoring",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Project detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Environment detection",
+          "PASS",
+          "\u2713"
+        ]
+      ],
+      "total_tests": 4,
+      "success_rate": 100.0
+    },
+    "Logging System": {
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "test_details": [
+        [
+          "JSON logging",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SQLite logging",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Log retrieval",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Tag filtering",
+          "PASS",
+          "\u2713"
+        ]
+      ],
+      "total_tests": 4,
+      "success_rate": 100.0
+    }
+  },
+  "issues_found": [
+    "Command generation semantic accuracy is 35.7% (target: \u226585%)",
+    "Best practice adoption is 14.3% (target: \u226570%)"
+  ],
+  "recommendations": [
+    "Fine-tune LLM on domain-specific command datasets",
+    "Implement feedback loop for user corrections",
+    "Enhance prompt engineering to emphasize best practices",
+    "Add post-processing to inject helpful flags"
+  ]
+}

@@ -1,0 +1,1068 @@
+{
+  "timestamp": "2025-11-10T01:12:49.774449",
+  "modules": {
+    "rollback": {
+      "total_tests": 20,
+      "tests_passed": 20,
+      "tests_failed": 0,
+      "success_rate": 100.0,
+      "average_execution_time": 0.17299842834472656,
+      "test_details": [
+        [
+          "Basic file backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Basic file restore",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Multiple file backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Restore all files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Backup non-existent file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Restore without backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Backup directory (should fail)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Clear all backups",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Backup preserves metadata",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Concurrent backups",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Large file backup (10MB)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Binary file backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Special characters in filename",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Empty file backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Symbolic link backup",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Restore file permissions",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Partial restore",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "File without extension",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Restore deleted file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Timestamp uniqueness",
+          "PASS",
+          "\u2713"
+        ]
+      ]
+    },
+    "compliance": {
+      "total_tests": 48,
+      "tests_passed": 43,
+      "tests_failed": 5,
+      "success_rate": 89.58333333333334,
+      "test_details": [
+        [
+          "Safe: List files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Print working directory",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Echo text",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Cat file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Grep search",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Find command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Process list",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Disk usage",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Memory info",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Show date",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "PII: Password file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "PII: Shadow file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "PII: Credit card log",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "PII: SSN database",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "HIPAA: Patient records",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "HIPAA: Medical data",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "HIPAA: Health info",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Security: FTP transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Security: Telnet connection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Security: FTP uppercase",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: SSH connection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: SCP transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: SFTP transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Rsync transfer",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Security: MySQL password",
+          "FAIL",
+          "Expected non-compliant, got compliant"
+        ],
+        [
+          "Security: Generic password",
+          "FAIL",
+          "Expected non-compliant, got compliant"
+        ],
+        [
+          "Security: PWD flag",
+          "FAIL",
+          "Expected non-compliant, got compliant"
+        ],
+        [
+          "Safe: Password prompt",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete root",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete var",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete home",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Delete specific file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Delete temp folder",
+          "FAIL",
+          "Expected compliant, got non-compliant"
+        ],
+        [
+          "SOX: Add user",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Delete user",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Modify user",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Add group",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Delete group",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Change password",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: File permission change",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SOX: Safe permission",
+          "FAIL",
+          "Expected compliant, got non-compliant"
+        ],
+        [
+          "HIPAA: FTP medical data",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "HIPAA: Telnet health DB",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Empty command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Whitespace only",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Complex safe command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Pipe commands",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Multiple commands",
+          "PASS",
+          "\u2713"
+        ]
+      ]
+    },
+    "context_awareness": {
+      "total_tests": 25,
+      "tests_passed": 25,
+      "tests_failed": 0,
+      "success_rate": 100.0,
+      "test_details": [
+        [
+          "Full context structure",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context to JSON conversion",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON error handling",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Disk usage monitoring",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Disk usage threshold",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "CPU usage monitoring",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "CPU usage threshold",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Memory usage monitoring",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Memory usage threshold",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Zombie process detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Running process summary",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Network connections monitoring",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Git project detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Docker project detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Node.js project detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Multiple project types",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "No project context",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Environment detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Environment from ENV var",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Hostname detection",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context display no error",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context display with warnings",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Graceful psutil failure",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context collection performance",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Resource monitoring consistency",
+          "PASS",
+          "\u2713"
+        ]
+      ]
+    },
+    "logging": {
+      "total_tests": 28,
+      "tests_passed": 24,
+      "tests_failed": 4,
+      "success_rate": 85.71428571428571,
+      "test_details": [
+        [
+          "JSON log creation",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON log content",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON log with tags",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON log with context",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON multiple entries",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "JSON log rotation",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SQLite DB creation",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SQLite table structure",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SQLite log content",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "SQLite tags as JSON",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Get history (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Get history (SQLite)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Frequent commands (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Frequent commands (SQLite)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Recent failures (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Recent failures (SQLite)",
+          "FAIL",
+          "Exception: LogEntry.__init__() got an unexpected keyword argument 'id'"
+        ],
+        [
+          "Commands by tag (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Commands by tag (SQLite)",
+          "FAIL",
+          "Exception: LogEntry.__init__() got an unexpected keyword argument 'id'"
+        ],
+        [
+          "Statistics (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Statistics (SQLite)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Empty log retrieval (JSON)",
+          "FAIL",
+          "Should return empty list for empty log"
+        ],
+        [
+          "Empty log retrieval (SQLite)",
+          "FAIL",
+          "Should return empty list for empty log"
+        ],
+        [
+          "Corrupted JSON handling",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Log entry validation",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Timestamp format",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Default values",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Concurrent logging",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Special characters",
+          "PASS",
+          "\u2713"
+        ]
+      ]
+    },
+    "safety": {
+      "total_tests": 83,
+      "tests_passed": 76,
+      "tests_failed": 7,
+      "success_rate": 91.56626506024097,
+      "dangerous_detection_rate": 96.0,
+      "safe_pass_rate": 84.84848484848484,
+      "test_details": [
+        [
+          "Safe: List files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Print directory",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Cat file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Grep search",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Echo text",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Find files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Show processes",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Disk usage",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Memory info",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Tail log",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Head file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Count lines",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Sort file",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Unique lines",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Safe: Cut columns",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: high | Reason: Operation on critical path: /e"
+        ],
+        [
+          "Critical: Delete root",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Fork bomb",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Format disk",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Zero disk",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Overwrite passwd",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Overwrite shadow",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete var",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete home",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete usr",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Critical: Delete boot",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Sudo delete",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Chmod 777 root",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Kill init",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Shutdown system",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Reboot system",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Poweroff",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Sudo shutdown",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Format C",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Chmod 777 etc",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "High: Delete system files",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Medium: Wget pipe sh",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Medium: Curl pipe bash",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Medium: Netcat listener",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Medium: Socat exec",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Medium: Wget pipe",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Low: Pkill python",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Low: Killall firefox",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Low: DD input",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Sudo ls",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Su root",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Mount device",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Umount",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Systemctl",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Useradd",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Userdel",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Passwd",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Priv: Chown root",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Path: Edit passwd",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Path: Edit shadow",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Path: Touch boot",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Path: Move from bin",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Path: Delete from lib",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Wildcard: Delete all",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Wildcard: Chmod all",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Wildcard: Chown all",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Wildcard: Safe find",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Pipe: Safe grep",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Pipe: Safe wc",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Chain: Safe commands",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Chain: Mixed",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low | Reason: Command passed all safety chec"
+        ],
+        [
+          "Edge: Empty command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Whitespace",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Comment only",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Very long command",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Special chars",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Edge: Quoted rm",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: critical | Reason: Command matches denylist (crit"
+        ],
+        [
+          "Context: Safe delete specific",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+        ],
+        [
+          "Context: Safe chmod 644",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+        ],
+        [
+          "Context: Safe mkdir",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context: Safe touch",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context: Safe cp",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Context: Safe mv",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+        ],
+        [
+          "Network: Ping",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Network: Safe curl",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Network: Safe wget",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Network: SSH",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low | Reason: Command passed all safety chec"
+        ],
+        [
+          "Network: SCP",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Network: Rsync",
+          "PASS",
+          "\u2713"
+        ]
+      ]
+    }
+  }
+}
