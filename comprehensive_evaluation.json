@@ -1,1066 +1,3361 @@
 {
-  "timestamp": "2025-11-10T01:12:49.774449",
+  "timestamp": "2025-11-19T02:17:27.958316",
   "modules": {
     "rollback": {
-      "total_tests": 20,
-      "tests_passed": 20,
-      "tests_failed": 0,
-      "success_rate": 100.0,
-      "average_execution_time": 0.17299842834472656,
+      "total_tests": 56,
+      "tests_passed": 49,
+      "tests_failed": 7,
+      "success_rate": 87.5,
+      "total_execution_time": 4.673505783081055,
+      "average_execution_time": 0.08345546041216169,
+      "category_stats": {
+        "General": {
+          "passed": 34,
+          "failed": 2
+        },
+        "Permissions": {
+          "passed": 5,
+          "failed": 0
+        },
+        "Large Files": {
+          "passed": 5,
+          "failed": 0
+        },
+        "Concurrency": {
+          "passed": 0,
+          "failed": 5
+        },
+        "File Types": {
+          "passed": 5,
+          "failed": 0
+        }
+      },
       "test_details": [
         [
-          "Basic file backup",
+          "Test 10: Multiple backups have unique timestamps",
           "PASS",
-          "\u2713"
+          "\u2713",
+          3.3027830123901367,
+          "General"
         ],
         [
-          "Basic file restore",
+          "Test 11: Backup read-only file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0004532337188720703,
+          "General"
         ],
         [
-          "Multiple file backup",
+          "Test 12: Backup executable file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0004317760467529297,
+          "General"
         ],
         [
-          "Restore all files",
+          "Test 13: Restore preserves permissions",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.000453948974609375,
+          "Permissions"
         ],
         [
-          "Backup non-existent file",
+          "Test 14: Backup write-only file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.00013303756713867188,
+          "General"
         ],
         [
-          "Restore without backup",
+          "Test 15: Backup file with no permissions",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0001220703125,
+          "Permissions"
         ],
         [
-          "Backup directory (should fail)",
+          "Test 16: Backup preserves file metadata",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0002999305725097656,
+          "General"
         ],
         [
-          "Clear all backups",
+          "Test 17: Backup file with sticky bit",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0004010200500488281,
+          "General"
         ],
         [
-          "Backup preserves metadata",
+          "Test 18: Backup file with setuid",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.00025773048400878906,
+          "General"
         ],
         [
-          "Concurrent backups",
+          "Test 19: Backup with different umask",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0002505779266357422,
+          "General"
         ],
         [
-          "Large file backup (10MB)",
+          "Test 1: Basic single file backup",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0003082752227783203,
+          "General"
         ],
         [
-          "Binary file backup",
+          "Test 20: Backup file with group permissions",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0003809928894042969,
+          "Permissions"
         ],
         [
-          "Special characters in filename",
+          "Test 21: Backup world-readable file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0002665519714355469,
+          "General"
         ],
         [
-          "Empty file backup",
+          "Test 22: Backup owner-only file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0003917217254638672,
+          "General"
         ],
         [
-          "Symbolic link backup",
+          "Test 23: Change permissions between backup and restore",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0003902912139892578,
+          "Permissions"
         ],
         [
-          "Restore file permissions",
+          "Test 24: Backup and restore executable script",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.0004956722259521484,
+          "General"
         ],
         [
-          "Partial restore",
+          "Test 25: Multiple files with different permissions",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.001474618911743164,
+          "Permissions"
         ],
         [
-          "File without extension",
+          "Test 26: Backup 1MB file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.002172231674194336,
+          "Large Files"
         ],
         [
-          "Restore deleted file",
+          "Test 27: Backup 10MB file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.01919269561767578,
+          "Large Files"
         ],
         [
-          "Timestamp uniqueness",
+          "Test 28: Backup 100MB file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          0.17593002319335938,
+          "Large Files"
+        ],
+        [
+          "Test 29: Verify large file integrity after restore",
+          "PASS",
+          "\u2713",
+          0.01822686195373535,
+          "Large Files"
+        ],
+        [
+          "Test 2: Basic single file restore",
+          "PASS",
+          "\u2713",
+          0.0006601810455322266,
+          "General"
+        ],
+        [
+          "Test 30: Backup sparse file",
+          "PASS",
+          "\u2713",
+          0.010360002517700195,
+          "General"
+        ],
+        [
+          "Test 31: Backup multiple large files sequentially",
+          "PASS",
+          "\u2713",
+          0.05095696449279785,
+          "Large Files"
+        ],
+        [
+          "Test 32: Handle file growing during backup",
+          "PASS",
+          "\u2713",
+          0.00036907196044921875,
+          "General"
+        ],
+        [
+          "Test 33: Backup file with data holes",
+          "PASS",
+          "\u2713",
+          0.0013709068298339844,
+          "General"
+        ],
+        [
+          "Test 34: Backup binary executable",
+          "PASS",
+          "\u2713",
+          0.001062631607055664,
+          "General"
+        ],
+        [
+          "Test 35: Backup zero-byte file",
+          "PASS",
+          "\u2713",
+          0.0002777576446533203,
+          "General"
+        ],
+        [
+          "Test 36: Backup file exactly 4GB (if space available)",
+          "PASS",
+          "\u2713",
+          1.71661376953125e-05,
+          "General"
+        ],
+        [
+          "Test 3: Multiple file backup",
+          "PASS",
+          "\u2713",
+          0.002299785614013672,
+          "General"
+        ],
+        [
+          "Test 4: Restore all backed up files",
+          "PASS",
+          "\u2713",
+          0.002230405807495117,
+          "General"
+        ],
+        [
+          "Test 56: Multiple threads backing up same file",
+          "PASS",
+          "\u2713",
+          0.002599477767944336,
+          "General"
+        ],
+        [
+          "Test 57: Multiple threads backing up different files",
+          "PASS",
+          "\u2713",
+          0.005550384521484375,
+          "General"
+        ],
+        [
+          "Test 58: Multiple threads restoring files",
+          "PASS",
+          "\u2713",
+          0.003566741943359375,
+          "General"
+        ],
+        [
+          "Test 59: Concurrent backup and restore",
+          "FAIL",
+          "",
+          0.0006914138793945312,
+          "Concurrency"
+        ],
+        [
+          "Test 5: Backup non-existent file",
+          "PASS",
+          "\u2713",
+          4.649162292480469e-05,
+          "General"
+        ],
+        [
+          "Test 60: High concurrency backup (100 threads)",
+          "FAIL",
+          "",
+          0.043581247329711914,
+          "General"
+        ],
+        [
+          "Test 61: Concurrently clear backups while running tests",
+          "FAIL",
+          "",
+          0.002932310104370117,
+          "Concurrency"
+        ],
+        [
+          "Test 62: Concurrent read/write access to the same file",
+          "FAIL",
+          "",
+          0.0014472007751464844,
+          "Concurrency"
+        ],
+        [
+          "Test 63: Simulate and recover from a deadlock scenario",
+          "FAIL",
+          "",
+          1.0022692680358887,
+          "General"
+        ],
+        [
+          "Test 64: Concurrently create and backup symlinks",
+          "FAIL",
+          "",
+          0.006455898284912109,
+          "Concurrency"
+        ],
+        [
+          "Test 65: Concurrently create and backup hard links",
+          "FAIL",
+          "Exception: [Errno 17] File exists: '/tmp/rollback_test_9ola524s/original.txt' -> '/tmp/rollback_test_9ola524s/link_2.txt'",
+          0.0004994869232177734,
+          "Concurrency"
+        ],
+        [
+          "Test 6: Restore file without backup",
+          "PASS",
+          "\u2713",
+          0.00020003318786621094,
+          "General"
+        ],
+        [
+          "Test 7: Backup empty file",
+          "PASS",
+          "\u2713",
+          0.00033664703369140625,
+          "General"
+        ],
+        [
+          "Test 86: Backup plain text file",
+          "PASS",
+          "\u2713",
+          0.0004317760467529297,
+          "General"
+        ],
+        [
+          "Test 87: Backup JSON file",
+          "PASS",
+          "\u2713",
+          0.0007061958312988281,
+          "File Types"
+        ],
+        [
+          "Test 88: Backup XML file",
+          "PASS",
+          "\u2713",
+          0.00035381317138671875,
+          "File Types"
+        ],
+        [
+          "Test 89: Backup CSV file",
+          "PASS",
+          "\u2713",
+          0.0004410743713378906,
+          "File Types"
+        ],
+        [
+          "Test 8: Clear all backups",
+          "PASS",
+          "\u2713",
+          0.0011501312255859375,
+          "General"
+        ],
+        [
+          "Test 90: Backup Markdown file",
+          "PASS",
+          "\u2713",
+          0.0003612041473388672,
+          "General"
+        ],
+        [
+          "Test 91: Backup HTML file",
+          "PASS",
+          "\u2713",
+          0.0003352165222167969,
+          "File Types"
+        ],
+        [
+          "Test 92: Backup PDF file",
+          "PASS",
+          "\u2713",
+          0.00033473968505859375,
+          "File Types"
+        ],
+        [
+          "Test 93: Backup image file",
+          "PASS",
+          "\u2713",
+          0.0003459453582763672,
+          "General"
+        ],
+        [
+          "Test 94: Backup archive file",
+          "PASS",
+          "\u2713",
+          0.003917217254638672,
+          "General"
+        ],
+        [
+          "Test 95: Backup config file",
+          "PASS",
+          "\u2713",
+          0.00040841102600097656,
+          "General"
+        ],
+        [
+          "Test 9: Backup directory (should fail)",
+          "PASS",
+          "\u2713",
+          0.00012230873107910156,
+          "General"
         ]
       ]
     },
     "compliance": {
-      "total_tests": 48,
-      "tests_passed": 43,
-      "tests_failed": 5,
-      "success_rate": 89.58333333333334,
+      "total_tests": 210,
+      "tests_passed": 117,
+      "tests_failed": 93,
+      "success_rate": 55.714285714285715,
+      "category_stats": {
+        "Safe": {
+          "passed": 20,
+          "failed": 0
+        },
+        "PII": {
+          "passed": 4,
+          "failed": 6
+        },
+        "HIPAA": {
+          "passed": 4,
+          "failed": 6
+        },
+        "GDPR": {
+          "passed": 1,
+          "failed": 4
+        },
+        "PCI-DSS": {
+          "passed": 0,
+          "failed": 5
+        },
+        "Encryption": {
+          "passed": 19,
+          "failed": 6
+        },
+        "Passwords": {
+          "passed": 6,
+          "failed": 14
+        },
+        "Deletion": {
+          "passed": 18,
+          "failed": 2
+        },
+        "SOX": {
+          "passed": 10,
+          "failed": 20
+        },
+        "Audit": {
+          "passed": 3,
+          "failed": 12
+        },
+        "Network": {
+          "passed": 10,
+          "failed": 10
+        },
+        "Database": {
+          "passed": 7,
+          "failed": 8
+        },
+        "Edge": {
+          "passed": 15,
+          "failed": 0
+        }
+      },
       "test_details": [
         [
           "Safe: List files",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Print working directory",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Echo text",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Cat file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Grep search",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Find command",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Process list",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Disk usage",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Memory info",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
         ],
         [
           "Safe: Show date",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Show uptime",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Show hostname",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Show whoami",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Show environment",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Tail log",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Head file",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Count lines",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Sort file",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Unique values",
+          "PASS",
+          "\u2713",
+          "Safe"
+        ],
+        [
+          "Safe: Compare files",
+          "PASS",
+          "\u2713",
+          "Safe"
         ],
         [
           "PII: Password file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "PII"
         ],
         [
           "PII: Shadow file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "PII"
         ],
         [
           "PII: Credit card log",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "PII"
         ],
         [
           "PII: SSN database",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "PII"
+        ],
+        [
+          "PII: Social security",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
+        ],
+        [
+          "PII: Personal info",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
+        ],
+        [
+          "PII: Customer data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
+        ],
+        [
+          "PII: User credentials",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
+        ],
+        [
+          "PII: Email addresses",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
+        ],
+        [
+          "PII: Phone numbers",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PII"
         ],
         [
           "HIPAA: Patient records",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "HIPAA"
         ],
         [
           "HIPAA: Medical data",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "HIPAA"
         ],
         [
           "HIPAA: Health info",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: PHI database",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Diagnosis codes",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Treatment plans",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Lab results",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Prescription data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Insurance info",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "HIPAA"
+        ],
+        [
+          "HIPAA: Medical history",
+          "PASS",
+          "\u2713",
+          "HIPAA"
+        ],
+        [
+          "GDPR: Personal data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "GDPR"
+        ],
+        [
+          "GDPR: EU citizen data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "GDPR"
+        ],
+        [
+          "GDPR: Privacy data",
+          "PASS",
+          "\u2713",
+          "GDPR"
+        ],
+        [
+          "GDPR: Consent records",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "GDPR"
+        ],
+        [
+          "GDPR: Data subject info",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "GDPR"
+        ],
+        [
+          "PCI: Card numbers",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PCI-DSS"
+        ],
+        [
+          "PCI: CVV codes",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PCI-DSS"
+        ],
+        [
+          "PCI: Payment data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PCI-DSS"
+        ],
+        [
+          "PCI: Cardholder data",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PCI-DSS"
+        ],
+        [
+          "PCI: Transaction log",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "PCI-DSS"
         ],
         [
           "Security: FTP transfer",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
         ],
         [
           "Security: Telnet connection",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
         ],
         [
           "Security: FTP uppercase",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Security: HTTP transfer",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
+        ],
+        [
+          "Security: Plain SMTP",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
+        ],
+        [
+          "Security: FTP upload",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Security: Telnet port 23",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Security: TFTP transfer",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
+        ],
+        [
+          "Security: Rlogin",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
+        ],
+        [
+          "Security: Rsh",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
+        ],
+        [
+          "Security: Rexec",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Encryption"
         ],
         [
           "Safe: SSH connection",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
         ],
         [
           "Safe: SCP transfer",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
         ],
         [
           "Safe: SFTP transfer",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
         ],
         [
-          "Safe: Rsync transfer",
+          "Safe: Rsync over SSH",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: HTTPS request",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: FTPS transfer",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: SCP with key",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: SSH tunnel",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: Git over SSH",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: SMTPS",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: Secure wget",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: Secure curl",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: SSH key copy",
+          "PASS",
+          "\u2713",
+          "Encryption"
+        ],
+        [
+          "Safe: Rsync SSH tunnel",
+          "PASS",
+          "\u2713",
+          "Encryption"
         ],
         [
           "Security: MySQL password",
           "FAIL",
-          "Expected non-compliant, got compliant"
+          "Expected non-compliant, got compliant",
+          "Passwords"
         ],
         [
           "Security: Generic password",
           "FAIL",
-          "Expected non-compliant, got compliant"
+          "Expected non-compliant, got compliant",
+          "Passwords"
         ],
         [
           "Security: PWD flag",
           "FAIL",
-          "Expected non-compliant, got compliant"
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Pass flag",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: PostgreSQL password",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Redis password",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: MongoDB password",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Ansible vault",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Docker login",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Git credential",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Curl auth",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: Wget auth",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: API key inline",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
+        ],
+        [
+          "Security: AWS credentials",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Passwords"
         ],
         [
           "Safe: Password prompt",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Passwords"
+        ],
+        [
+          "Safe: SSH key auth",
+          "PASS",
+          "\u2713",
+          "Passwords"
+        ],
+        [
+          "Safe: Keyring usage",
+          "PASS",
+          "\u2713",
+          "Passwords"
+        ],
+        [
+          "Safe: Environment var",
+          "PASS",
+          "\u2713",
+          "Passwords"
+        ],
+        [
+          "Safe: Config file",
+          "PASS",
+          "\u2713",
+          "Passwords"
+        ],
+        [
+          "Safe: Vault file",
+          "PASS",
+          "\u2713",
+          "Passwords"
         ],
         [
           "Critical: Delete root",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Deletion"
         ],
         [
           "Critical: Delete var",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Deletion"
         ],
         [
           "Critical: Delete home",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete usr",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete etc",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete boot",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete bin",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete sbin",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete lib",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete opt",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete srv",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Wildcard root",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete system32",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Critical: Delete all",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Deletion"
         ],
         [
           "Safe: Delete specific file",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Deletion"
         ],
         [
           "Safe: Delete temp folder",
           "FAIL",
-          "Expected compliant, got non-compliant"
+          "Expected compliant, got non-compliant",
+          "Deletion"
+        ],
+        [
+          "Safe: Delete old logs",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Safe: Delete user dir",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Safe: Delete cache",
+          "PASS",
+          "\u2713",
+          "Deletion"
+        ],
+        [
+          "Safe: Clean build",
+          "PASS",
+          "\u2713",
+          "Deletion"
         ],
         [
           "SOX: Add user",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
           "SOX: Delete user",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
           "SOX: Modify user",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
           "SOX: Add group",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
           "SOX: Delete group",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
           "SOX: Change password",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
-          "SOX: File permission change",
+          "SOX: Chmod 777",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
-          "SOX: Safe permission",
+          "SOX: Chmod 666",
+          "PASS",
+          "\u2713",
+          "SOX"
+        ],
+        [
+          "SOX: Chown to root",
           "FAIL",
-          "Expected compliant, got non-compliant"
+          "Expected non-compliant, got compliant",
+          "SOX"
         ],
         [
-          "HIPAA: FTP medical data",
+          "SOX: Add sudo access",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
         ],
         [
-          "HIPAA: Telnet health DB",
+          "SOX: Edit sudoers",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Modify crontab",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Add cron job",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Modify ACL",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Change file owner",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Recursive chmod",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Recursive chown",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: System config edit",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Firewall change",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: IPtables rule",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: SELinux change",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: AppArmor disable",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Service start",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Service stop",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Service enable",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Mount filesystem",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "SOX: Unmount filesystem",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "SOX"
+        ],
+        [
+          "Safe: Chmod 644",
+          "FAIL",
+          "Expected compliant, got non-compliant",
+          "SOX"
+        ],
+        [
+          "Safe: Chmod 755 script",
+          "FAIL",
+          "Expected compliant, got non-compliant",
+          "SOX"
+        ],
+        [
+          "Safe: View permissions",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "SOX"
+        ],
+        [
+          "Audit: Clear history",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Delete history",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Clear auth log",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Clear syslog",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Delete logs",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Shred log",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Disable logging",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Clear lastlog",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Clear wtmp",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Clear btmp",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Modify audit rules",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Audit: Disable auditd",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Audit"
+        ],
+        [
+          "Safe: View history",
+          "PASS",
+          "\u2713",
+          "Audit"
+        ],
+        [
+          "Safe: View logs",
+          "PASS",
+          "\u2713",
+          "Audit"
+        ],
+        [
+          "Safe: Search logs",
+          "PASS",
+          "\u2713",
+          "Audit"
+        ],
+        [
+          "Network: Open firewall",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Allow all traffic",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Disable firewall",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Port forwarding",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Packet sniffing",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Network scan",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: ARP spoofing",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: DNS spoofing",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Port scan",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Network: Banner grabbing",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Network"
+        ],
+        [
+          "Safe: Check connectivity",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: Trace route",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: DNS lookup",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: View connections",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: View routes",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: Check ports",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: Network stats",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: IP address",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: MTU check",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Safe: Bandwidth test",
+          "PASS",
+          "\u2713",
+          "Network"
+        ],
+        [
+          "Database: Drop database",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Delete all records",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Truncate table",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Grant all privileges",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Create superuser",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Disable backup",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Export PHI",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Database: Export PII",
+          "FAIL",
+          "Expected non-compliant, got compliant",
+          "Database"
+        ],
+        [
+          "Safe: Select query",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: Count records",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: Database status",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: List databases",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: Explain query",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: Show tables",
+          "PASS",
+          "\u2713",
+          "Database"
+        ],
+        [
+          "Safe: Database size",
+          "PASS",
+          "\u2713",
+          "Database"
         ],
         [
           "Edge: Empty command",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Edge"
         ],
         [
           "Edge: Whitespace only",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Edge"
         ],
         [
-          "Edge: Complex safe command",
+          "Edge: Complex safe pipe",
           "PASS",
-          "\u2713"
-        ],
-        [
-          "Edge: Pipe commands",
-          "PASS",
-          "\u2713"
+          "\u2713",
+          "Edge"
         ],
         [
           "Edge: Multiple commands",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Command substitution",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Redirect output",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Append output",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Background job",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Conditional exec",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Loop",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: While loop",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Case statement",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Function",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Subshell",
+          "PASS",
+          "\u2713",
+          "Edge"
+        ],
+        [
+          "Edge: Here document",
+          "PASS",
+          "\u2713",
+          "Edge"
         ]
       ]
     },
     "context_awareness": {
-      "total_tests": 25,
-      "tests_passed": 25,
-      "tests_failed": 0,
-      "success_rate": 100.0,
+      "total_tests": 70,
+      "tests_passed": 35,
+      "tests_failed": 35,
+      "success_rate": 50.0,
       "test_details": [
         [
-          "Full context structure",
+          "Test 10: Zombie process detection returns valid data",
           "PASS",
           "\u2713"
         ],
         [
-          "Context to JSON conversion",
+          "Test 11: Running process summary returns valid data",
+          "FAIL",
+          "Exception: check_running_process_summary() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 12: Network connections monitoring returns valid data",
+          "FAIL",
+          "Exception: check_network_connections() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 13: Detects Git repository",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON error handling",
+          "Test 14: Detects Docker project",
           "PASS",
           "\u2713"
         ],
         [
-          "Disk usage monitoring",
+          "Test 15: Detects Node.js project",
           "PASS",
           "\u2713"
         ],
         [
-          "Disk usage threshold",
+          "Test 16: Detects multiple project types",
           "PASS",
           "\u2713"
         ],
         [
-          "CPU usage monitoring",
+          "Test 17: Handles directory with no project indicators",
           "PASS",
           "\u2713"
         ],
         [
-          "CPU usage threshold",
+          "Test 18: Environment detection returns valid data",
           "PASS",
           "\u2713"
         ],
         [
-          "Memory usage monitoring",
+          "Test 19: Environment detection reads ENV variable",
           "PASS",
           "\u2713"
         ],
         [
-          "Memory usage threshold",
+          "Test 1: Full context collection returns all required keys",
           "PASS",
           "\u2713"
         ],
         [
-          "Zombie process detection",
+          "Test 20: Hostname detection returns valid hostname",
           "PASS",
           "\u2713"
         ],
         [
-          "Running process summary",
+          "Test 21: Context display doesn't raise errors",
+          "FAIL",
+          "Exception: list indices must be integers or slices, not str"
+        ],
+        [
+          "Test 22: Context display handles warning states",
           "PASS",
           "\u2713"
         ],
         [
-          "Network connections monitoring",
+          "Test 23: Graceful handling if psutil functions fail",
           "PASS",
           "\u2713"
         ],
         [
-          "Git project detection",
+          "Test 24: Context collection completes in reasonable time",
           "PASS",
           "\u2713"
         ],
         [
-          "Docker project detection",
+          "Test 25: Multiple calls return consistent structure",
           "PASS",
           "\u2713"
         ],
         [
-          "Node.js project detection",
+          "Test 26: Detects Python project",
+          "FAIL",
+          "Exception: 'python_project'"
+        ],
+        [
+          "Test 27: Detects Java project",
+          "FAIL",
+          "Exception: 'java_project'"
+        ],
+        [
+          "Test 28: Detects Rust project",
+          "FAIL",
+          "Exception: 'rust_project'"
+        ],
+        [
+          "Test 29: Detects Go project",
+          "FAIL",
+          "Exception: 'go_project'"
+        ],
+        [
+          "Test 2: Context can be serialized to JSON",
           "PASS",
           "\u2713"
         ],
         [
-          "Multiple project types",
+          "Test 30: Detects Ruby project",
+          "FAIL",
+          "Exception: 'ruby_project'"
+        ],
+        [
+          "Test 31: Detects project in nested directory",
           "PASS",
           "\u2713"
         ],
         [
-          "No project context",
+          "Test 32: Detects virtual environment",
+          "FAIL",
+          "Should detect virtual environment"
+        ],
+        [
+          "Test 33: Detects monorepo structure",
           "PASS",
           "\u2713"
         ],
         [
-          "Environment detection",
+          "Test 34: Detects Dockerfile",
+          "FAIL",
+          "Exception: 'has_dockerfile'"
+        ],
+        [
+          "Test 35: Detects Kubernetes config",
+          "FAIL",
+          "Should detect Kubernetes"
+        ],
+        [
+          "Test 36: Detects Makefile",
+          "FAIL",
+          "Should detect Makefile"
+        ],
+        [
+          "Test 37: Detects CI/CD configuration",
+          "FAIL",
+          "Should detect CI/CD"
+        ],
+        [
+          "Test 38: Detects README file",
+          "FAIL",
+          "Should detect README"
+        ],
+        [
+          "Test 39: Detects LICENSE file",
+          "FAIL",
+          "Should detect LICENSE"
+        ],
+        [
+          "Test 3: Context JSON conversion handles errors gracefully",
           "PASS",
           "\u2713"
         ],
         [
-          "Environment from ENV var",
+          "Test 40: Detects .gitignore file",
+          "FAIL",
+          "Should detect .gitignore"
+        ],
+        [
+          "Test 41: Disk usage works with multiple partitions",
           "PASS",
           "\u2713"
         ],
         [
-          "Hostname detection",
+          "Test 42: CPU usage on multicore systems",
+          "FAIL",
+          "Should report CPU on multicore"
+        ],
+        [
+          "Test 43: Memory monitoring includes swap",
+          "FAIL",
+          "Should include swap info"
+        ],
+        [
+          "Test 44: Filter processes by user",
+          "FAIL",
+          "Exception: check_running_process_summary() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 45: Filter processes by name",
+          "FAIL",
+          "Exception: check_running_process_summary() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 46: Network connections filtered by protocol",
+          "FAIL",
+          "Exception: check_network_connections() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 47: Network connections filtered by state",
+          "FAIL",
+          "Exception: check_network_connections() got an unexpected keyword argument 'limit'"
+        ],
+        [
+          "Test 48: Detects if zombies can be cleaned",
           "PASS",
           "\u2713"
         ],
         [
-          "Context display no error",
+          "Test 49: Disk I/O statistics",
+          "FAIL",
+          "Should have status"
+        ],
+        [
+          "Test 4: Disk usage monitoring returns valid data",
           "PASS",
           "\u2713"
         ],
         [
-          "Context display with warnings",
+          "Test 50: Network I/O statistics",
+          "FAIL",
+          "Should have status"
+        ],
+        [
+          "Test 51: Get system boot time",
+          "FAIL",
+          "Should have status"
+        ],
+        [
+          "Test 52: Get system load average",
+          "FAIL",
+          "Should have status"
+        ],
+        [
+          "Test 53: Temperature monitoring (if available)",
           "PASS",
           "\u2713"
         ],
         [
-          "Graceful psutil failure",
+          "Test 54: Battery status (if available)",
           "PASS",
           "\u2713"
         ],
         [
-          "Context collection performance",
+          "Test 55: Active user sessions",
+          "FAIL",
+          "Should have status"
+        ],
+        [
+          "Test 56: Full context includes all required components",
+          "FAIL",
+          "Missing required key: timestamp"
+        ],
+        [
+          "Test 57: Context timestamp is valid ISO format",
+          "FAIL",
+          "Should have timestamp"
+        ],
+        [
+          "Test 58: Context can be serialized and deserialized",
           "PASS",
           "\u2713"
         ],
         [
-          "Resource monitoring consistency",
+          "Test 59: Context JSON size is reasonable",
           "PASS",
           "\u2713"
+        ],
+        [
+          "Test 5: Disk usage respects custom threshold",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 60: Context works on minimal system",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 61: Context can be cached",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 62: Context updates when system changes",
+          "FAIL",
+          "Exception: 'timestamp'"
+        ],
+        [
+          "Test 63: Context can be filtered to specific keys",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 64: Multiple contexts can be merged",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 65: Can detect differences between contexts",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 66: Context summary is well-formatted",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 67: Detects warnings in context",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 68: Calculates overall health score",
+          "FAIL",
+          "Health should be float"
+        ],
+        [
+          "Test 69: Generates recommendations from context",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 6: CPU usage monitoring returns valid data",
+          "FAIL",
+          "Should have 'ok' field"
+        ],
+        [
+          "Test 70: Context can be exported in multiple formats",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 7: CPU usage respects custom threshold",
+          "FAIL",
+          "Exception: 'ok'"
+        ],
+        [
+          "Test 8: Memory usage monitoring returns valid data",
+          "FAIL",
+          "Should have 'ok' field"
+        ],
+        [
+          "Test 9: Memory usage respects custom threshold",
+          "FAIL",
+          "Should have 'ok' field"
         ]
       ]
     },
     "logging": {
-      "total_tests": 28,
-      "tests_passed": 24,
-      "tests_failed": 4,
-      "success_rate": 85.71428571428571,
+      "total_tests": 60,
+      "tests_passed": 31,
+      "tests_failed": 29,
+      "success_rate": 51.66666666666667,
       "test_details": [
         [
-          "JSON log creation",
+          "Test 10: SQLite stores tags as JSON",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON log content",
+          "Test 11: Get history from JSON logs",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON log with tags",
+          "Test 12: Get history from SQLite logs",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON log with context",
+          "Test 13: Get frequent commands from JSON",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON multiple entries",
+          "Test 14: Get frequent commands from SQLite",
           "PASS",
           "\u2713"
         ],
         [
-          "JSON log rotation",
+          "Test 15: Get recent failures from JSON",
           "PASS",
           "\u2713"
         ],
         [
-          "SQLite DB creation",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "SQLite table structure",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "SQLite log content",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "SQLite tags as JSON",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Get history (JSON)",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Get history (SQLite)",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Frequent commands (JSON)",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Frequent commands (SQLite)",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Recent failures (JSON)",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Recent failures (SQLite)",
+          "Test 16: Get recent failures from SQLite",
           "FAIL",
           "Exception: LogEntry.__init__() got an unexpected keyword argument 'id'"
         ],
         [
-          "Commands by tag (JSON)",
+          "Test 17: Get commands by tag from JSON",
           "PASS",
           "\u2713"
         ],
         [
-          "Commands by tag (SQLite)",
+          "Test 18: Get commands by tag from SQLite",
           "FAIL",
           "Exception: LogEntry.__init__() got an unexpected keyword argument 'id'"
         ],
         [
-          "Statistics (JSON)",
+          "Test 19: Get statistics from JSON logs",
           "PASS",
           "\u2713"
         ],
         [
-          "Statistics (SQLite)",
+          "Test 1: JSON log file is created",
           "PASS",
           "\u2713"
         ],
         [
-          "Empty log retrieval (JSON)",
+          "Test 20: Get statistics from SQLite logs",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 21: Handle empty JSON log gracefully",
           "FAIL",
           "Should return empty list for empty log"
         ],
         [
-          "Empty log retrieval (SQLite)",
+          "Test 22: Handle empty SQLite log gracefully",
           "FAIL",
           "Should return empty list for empty log"
         ],
         [
-          "Corrupted JSON handling",
+          "Test 23: Handle corrupted JSON gracefully",
           "PASS",
           "\u2713"
         ],
         [
-          "Log entry validation",
+          "Test 24: Log entries have required fields",
           "PASS",
           "\u2713"
         ],
         [
-          "Timestamp format",
+          "Test 25: Timestamps are in ISO format",
           "PASS",
           "\u2713"
         ],
         [
-          "Default values",
+          "Test 26: Default values are handled correctly",
           "PASS",
           "\u2713"
         ],
         [
-          "Concurrent logging",
+          "Test 27: Multiple LogManager instances",
           "PASS",
           "\u2713"
         ],
         [
-          "Special characters",
+          "Test 28: Handle special characters in log data",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 29: Filter logs by status in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_status'"
+        ],
+        [
+          "Test 2: JSON log contains correct data",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 30: Filter logs by status in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_status'"
+        ],
+        [
+          "Test 31: Filter by date range in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_date_range'"
+        ],
+        [
+          "Test 32: Filter by date range in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_date_range'"
+        ],
+        [
+          "Test 33: Filter by AI model in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_model'"
+        ],
+        [
+          "Test 34: Filter by AI model in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_model'"
+        ],
+        [
+          "Test 35: Search query text in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_queries'"
+        ],
+        [
+          "Test 36: Search query text in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_queries'"
+        ],
+        [
+          "Test 37: Search command text in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_commands'"
+        ],
+        [
+          "Test 38: Search command text in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_commands'"
+        ],
+        [
+          "Test 39: Filter by execution time in JSON",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_execution_time'"
+        ],
+        [
+          "Test 3: JSON log stores tags correctly",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 40: Filter by execution time in SQLite",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'filter_by_execution_time'"
+        ],
+        [
+          "Test 41: Export JSON logs to CSV",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'export_to_csv'"
+        ],
+        [
+          "Test 42: Export SQLite logs to CSV",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'export_to_csv'"
+        ],
+        [
+          "Test 43: Export SQLite logs to JSON format",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'export_to_json'"
+        ],
+        [
+          "Test 44: Import logs from JSON file",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'import_from_json'"
+        ],
+        [
+          "Test 45: Import logs from CSV file",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'import_from_csv'"
+        ],
+        [
+          "Test 46: Backup JSON logs",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'backup_logs'"
+        ],
+        [
+          "Test 47: Backup SQLite logs",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'backup_logs'"
+        ],
+        [
+          "Test 48: Restore from backup (JSON)",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'backup_logs'"
+        ],
+        [
+          "Test 49: Restore from backup (SQLite)",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'backup_logs'"
+        ],
+        [
+          "Test 4: JSON log stores context correctly",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 50: Merge multiple JSON log files",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'merge_logs'"
+        ],
+        [
+          "Test 51: Log 100 entries quickly (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 52: Log 100 entries quickly (SQLite)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 53: Log very large query text (JSON)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 54: Log very large result (SQLite)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 55: Concurrent writes to JSON",
+          "FAIL",
+          "Should handle concurrent writes"
+        ],
+        [
+          "Test 56: Concurrent writes to SQLite",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 57: Fast retrieval from large JSON log",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 58: Fast retrieval from large SQLite log",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 59: Fast search in large JSON log",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_queries'"
+        ],
+        [
+          "Test 5: Multiple log entries are stored",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 60: Fast search in large SQLite log",
+          "FAIL",
+          "Exception: 'LogManager' object has no attribute 'search_queries'"
+        ],
+        [
+          "Test 6: JSON log rotation (keeps last 1000)",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 7: SQLite database is created",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 8: SQLite table has correct structure",
+          "PASS",
+          "\u2713"
+        ],
+        [
+          "Test 9: SQLite log contains correct data",
           "PASS",
           "\u2713"
         ]
       ]
     },
     "safety": {
-      "total_tests": 83,
-      "tests_passed": 76,
-      "tests_failed": 7,
-      "success_rate": 91.56626506024097,
-      "dangerous_detection_rate": 96.0,
-      "safe_pass_rate": 84.84848484848484,
+      "total_tests": 150,
+      "tests_passed": 89,
+      "tests_failed": 61,
+      "success_rate": 59.333333333333336,
+      "category_stats": {
+        "Command Chaining": {
+          "passed": 12,
+          "failed": 3
+        },
+        "Critical": {
+          "passed": 18,
+          "failed": 2
+        },
+        "Environment": {
+          "passed": 7,
+          "failed": 13
+        },
+        "Network Attack": {
+          "passed": 3,
+          "failed": 12
+        },
+        "Obfuscation": {
+          "passed": 20,
+          "failed": 5
+        },
+        "Real-World": {
+          "passed": 2,
+          "failed": 8
+        },
+        "Resource Exhaustion": {
+          "passed": 8,
+          "failed": 7
+        },
+        "Basic": {
+          "passed": 15,
+          "failed": 0
+        },
+        "Social Engineering": {
+          "passed": 4,
+          "failed": 11
+        }
+      },
       "test_details": [
         [
-          "Safe: List files",
+          "test_122",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Safe: Print directory",
+          "test_115",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Safe: Cat file",
+          "test_114",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Safe: Grep search",
+          "test_111",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Safe: Echo text",
+          "test_117",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Safe: Find files",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Show processes",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Disk usage",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Memory info",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Tail log",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Head file",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Count lines",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Sort file",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Unique lines",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Safe: Cut columns",
+          "test_119",
           "FAIL",
-          "Expected safe, got unsafe | Risk: high | Reason: Operation on critical path: /e"
+          "Expected unsafe, got safe | Risk: low",
+          "Command Chaining"
         ],
         [
-          "Critical: Delete root",
+          "test_113",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Critical: Fork bomb",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Format disk",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Zero disk",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Overwrite passwd",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Overwrite shadow",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Delete var",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Delete home",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Delete usr",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Critical: Delete boot",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Sudo delete",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Chmod 777 root",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Kill init",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Shutdown system",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Reboot system",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Poweroff",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Sudo shutdown",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Format C",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Chmod 777 etc",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "High: Delete system files",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Medium: Wget pipe sh",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Medium: Curl pipe bash",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Medium: Netcat listener",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Medium: Socat exec",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Medium: Wget pipe",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Low: Pkill python",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Low: Killall firefox",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Low: DD input",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Sudo ls",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Su root",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Mount device",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Umount",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Systemctl",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Useradd",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Userdel",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Passwd",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Priv: Chown root",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Path: Edit passwd",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Path: Edit shadow",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Path: Touch boot",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Path: Move from bin",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Path: Delete from lib",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Wildcard: Delete all",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Wildcard: Chmod all",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Wildcard: Chown all",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Wildcard: Safe find",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Pipe: Safe grep",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Pipe: Safe wc",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Chain: Safe commands",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Chain: Mixed",
+          "test_120",
           "FAIL",
-          "Expected unsafe, got safe | Risk: low | Reason: Command passed all safety chec"
+          "Expected unsafe, got safe | Risk: low",
+          "Command Chaining"
         ],
         [
-          "Edge: Empty command",
+          "test_123",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Edge: Whitespace",
+          "test_124",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Edge: Comment only",
+          "test_125",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Edge: Very long command",
+          "test_116",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Edge: Special chars",
+          "test_121",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Command Chaining"
         ],
         [
-          "Edge: Quoted rm",
+          "test_112",
+          "PASS",
+          "\u2713",
+          "Command Chaining"
+        ],
+        [
+          "test_118",
           "FAIL",
-          "Expected safe, got unsafe | Risk: critical | Reason: Command matches denylist (crit"
+          "Expected unsafe, got safe | Risk: low",
+          "Command Chaining"
         ],
         [
-          "Context: Safe delete specific",
+          "test_027",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_025",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_026",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_023",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_029",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_028",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_024",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_022",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_016",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_033",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_017",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_018",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_032",
           "FAIL",
-          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+          "Expected unsafe, got safe | Risk: low",
+          "Critical"
         ],
         [
-          "Context: Safe chmod 644",
+          "test_031",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_020",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_021",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_035",
+          "PASS",
+          "\u2713",
+          "Critical"
+        ],
+        [
+          "test_030",
           "FAIL",
-          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+          "Expected unsafe, got safe | Risk: low",
+          "Critical"
         ],
         [
-          "Context: Safe mkdir",
+          "test_034",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Critical"
         ],
         [
-          "Context: Safe touch",
+          "test_019",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Critical"
         ],
         [
-          "Context: Safe cp",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Context: Safe mv",
+          "test_070",
           "FAIL",
-          "Expected safe, got unsafe | Risk: high | Reason: Destructive command not allowe"
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
         ],
         [
-          "Network: Ping",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Network: Safe curl",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Network: Safe wget",
-          "PASS",
-          "\u2713"
-        ],
-        [
-          "Network: SSH",
+          "test_069",
           "FAIL",
-          "Expected unsafe, got safe | Risk: low | Reason: Command passed all safety chec"
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
         ],
         [
-          "Network: SCP",
+          "test_076",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Environment"
         ],
         [
-          "Network: Rsync",
+          "test_077",
           "PASS",
-          "\u2713"
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_071",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_074",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_072",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_063",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_062",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_065",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_080",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_079",
+          "PASS",
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_061",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_068",
+          "PASS",
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_064",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_067",
+          "PASS",
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_073",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_066",
+          "PASS",
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_075",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Environment"
+        ],
+        [
+          "test_078",
+          "PASS",
+          "\u2713",
+          "Environment"
+        ],
+        [
+          "test_133",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_129",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_130",
+          "PASS",
+          "\u2713",
+          "Network Attack"
+        ],
+        [
+          "test_140",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_131",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_134",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_127",
+          "PASS",
+          "\u2713",
+          "Network Attack"
+        ],
+        [
+          "test_135",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_132",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_126",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_139",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_137",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_138",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_128",
+          "PASS",
+          "\u2713",
+          "Network Attack"
+        ],
+        [
+          "test_136",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Network Attack"
+        ],
+        [
+          "test_055",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_053",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_056",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_036",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_051",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_045",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_043",
+          "FAIL",
+          "Expected safe, got unsafe | Risk: critical",
+          "Obfuscation"
+        ],
+        [
+          "test_046",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_044",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_052",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_060",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_049",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_037",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_040",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Obfuscation"
+        ],
+        [
+          "test_048",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_054",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Obfuscation"
+        ],
+        [
+          "test_050",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_057",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_042",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_047",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_038",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_058",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Obfuscation"
+        ],
+        [
+          "test_039",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_041",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Obfuscation"
+        ],
+        [
+          "test_059",
+          "PASS",
+          "\u2713",
+          "Obfuscation"
+        ],
+        [
+          "test_149",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_142",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_150",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_145",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_146",
+          "PASS",
+          "\u2713",
+          "Real-World"
+        ],
+        [
+          "test_143",
+          "PASS",
+          "\u2713",
+          "Real-World"
+        ],
+        [
+          "test_141",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_144",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_147",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_148",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Real-World"
+        ],
+        [
+          "test_103",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_096",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_106",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_098",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_104",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_107",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_099",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_102",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_108",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_097",
+          "PASS",
+          "\u2713",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_101",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_110",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_100",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_105",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_109",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Resource Exhaustion"
+        ],
+        [
+          "test_001",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_003",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_013",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_010",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_006",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_014",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_005",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_004",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_015",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_002",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_011",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_008",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_007",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_012",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_009",
+          "PASS",
+          "\u2713",
+          "Basic"
+        ],
+        [
+          "test_092",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_090",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_086",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_084",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_093",
+          "PASS",
+          "\u2713",
+          "Social Engineering"
+        ],
+        [
+          "test_091",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_081",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_083",
+          "PASS",
+          "\u2713",
+          "Social Engineering"
+        ],
+        [
+          "test_085",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_088",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_087",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_089",
+          "PASS",
+          "\u2713",
+          "Social Engineering"
+        ],
+        [
+          "test_082",
+          "PASS",
+          "\u2713",
+          "Social Engineering"
+        ],
+        [
+          "test_094",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
+        ],
+        [
+          "test_095",
+          "FAIL",
+          "Expected unsafe, got safe | Risk: low",
+          "Social Engineering"
         ]
       ]
     }

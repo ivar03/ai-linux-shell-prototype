@@ -200,3 +200,145 @@ def export_context(context: Dict, format: str = 'json', filepath: Optional[str] 
     
     return output
 
+class LogManager:
+    def __init__(self, backend="json"):
+        self.backend = backend
+        if backend == "json":
+            self.json_log_path = "logs.json"
+        else:
+            self.db_path = "logs.db"
+        self.init_logs()
+
+    def init_logs(self):
+        """Initialize logs storage"""
+        if self.backend == "json":
+            if not os.path.exists(self.json_log_path):
+                with open(self.json_log_path, 'w') as f:
+                    json.dump([], f)
+        else:
+            import sqlite3
+            conn = sqlite3.connect(self.db_path)
+            c = conn.cursor()
+            c.execute('''CREATE TABLE IF NOT EXISTS logs (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            timestamp TEXT,
+                            query TEXT,
+                            command TEXT,
+                            status TEXT,
+                            execution_time REAL
+                        )''')
+            conn.commit()
+            conn.close()
+
+    def log_interaction(self, query: str, command: str, status: str, execution_time: float):
+        """Log an interaction"""
+        if self.backend == "json":
+            with open(self.json_log_path, 'r+') as f:
+                data = json.load(f)
+                data.append({
+                    "timestamp": datetime.now().isoformat(),
+                    "query": query,
+                    "command": command,
+                    "status": status,
+                    "execution_time": execution_time
+                })
+                f.seek(0)
+                json.dump(data, f, indent=2)
+        else:
+            import sqlite3
+            conn = sqlite3.connect(self.db_path)
+            c = conn.cursor()
+            c.execute('''INSERT INTO logs (timestamp, query, command, status, execution_time)
+                          VALUES (?, ?, ?, ?, ?)''', 
+                          (datetime.now().isoformat(), query, command, status, execution_time))
+            conn.commit()
+            conn.close()
+
+    def get_history(self) -> List[LogEntry]:
+        """Get command history"""
+        if self.backend == "json":
+            with open(self.json_log_path, 'r') as f:
+                data = json.load(f)
+                return [LogEntry(**item) for item in data]
+        else:
+            import sqlite3
+            conn = sqlite3.connect(self.db_path)
+            c = conn.cursor()
+            c.execute("SELECT * FROM logs")
+            rows = c.fetchall()
+            conn.close()
+            return [LogEntry(*row) for row in rows]
+
+    def filter_by_status(self, status: str) -> List[LogEntry]:
+        """Filter logs by status"""
+        return [entry for entry in self.get_history() if entry.status == status]
+    
+    def filter_by_date_range(self, start_date: str, end_date: str) -> List[LogEntry]:
+        """Filter logs by date range"""
+        start = datetime.fromisoformat(start_date)
+        end = datetime.fromisoformat(end_date)
+        return [entry for entry in self.get_history() 
+                if start <= datetime.fromisoformat(entry.timestamp) <= end]
+    
+    def filter_by_model(self, model: str) -> List[LogEntry]:
+        """Filter logs by AI model"""
+        return [entry for entry in self.get_history() if entry.ai_model == model]
+    
+    def search_queries(self, search_text: str) -> List[LogEntry]:
+        """Search in query text"""
+        return [entry for entry in self.get_history() 
+                if search_text.lower() in entry.query.lower()]
+    
+    def search_commands(self, search_text: str) -> List[LogEntry]:
+        """Search in command text"""
+        return [entry for entry in self.get_history() 
+                if search_text.lower() in entry.command.lower()]
+    
+    def filter_by_execution_time(self, min_time: float, max_time: float) -> List[LogEntry]:
+        """Filter logs by execution time"""
+        return [entry for entry in self.get_history() 
+                if min_time <= entry.execution_time <= max_time]
+    
+    def export_to_csv(self, filepath: str):
+        """Export logs to CSV"""
+        import csv
+        with open(filepath, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['timestamp', 'query', 'command', 'status', 'execution_time'])
+            for entry in self.get_history():
+                writer.writerow([entry.timestamp, entry.query, entry.command, 
+                               entry.status, entry.execution_time])
+    
+    def export_to_json(self, filepath: str):
+        """Export logs to JSON"""
+        with open(filepath, 'w') as f:
+            json.dump([entry.__dict__ for entry in self.get_history()], f, indent=2)
+    
+    def import_from_json(self, filepath: str):
+        """Import logs from JSON"""
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+            for item in data:
+                self.log_interaction(**item)
+    
+    def import_from_csv(self, filepath: str):
+        """Import logs from CSV"""
+        import csv
+        with open(filepath, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                self.log_interaction(**row)
+    
+    def backup_logs(self, backup_path: str):
+        """Backup logs to specified path"""
+        import shutil
+        if self.backend == "json":
+            shutil.copy2(self.json_log_path, backup_path)
+        else:
+            shutil.copy2(self.db_path, backup_path)
+    
+    def merge_logs(self, *log_files: str):
+        """Merge multiple log files"""
+        for log_file in log_files:
+            if log_file.endswith('.json'):
+                self.import_from_json(log_file)

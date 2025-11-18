@@ -199,4 +199,3 @@ def export_context(context: Dict, format: str = 'json', filepath: Optional[str] 
             f.write(output)
     
     return output
-

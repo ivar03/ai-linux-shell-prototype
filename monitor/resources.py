@@ -3,6 +3,7 @@ import shutil
 import os
 import socket
 from typing import Dict, Any, List
+from datetime import datetime
 
 def check_disk_usage(threshold: float = 10.0) -> Dict[str, Any]:
     """Check disk usage and return status if below threshold (%)"""
@@ -138,3 +139,120 @@ def detect_environment() -> Dict[str, Any]:
         "hostname": hostname,
         "message": f"Environment detected: {detected_env}, Host: {hostname}"
     }
+
+def get_disk_io_stats() -> Dict:
+    """Get disk I/O statistics"""
+    try:
+        io = psutil.disk_io_counters()
+        return {
+            'read_bytes': io.read_bytes,
+            'write_bytes': io.write_bytes,
+            'read_count': io.read_count,
+            'write_count': io.write_count
+        }
+    except:
+        return {}
+
+def get_network_io_stats() -> Dict:
+    """Get network I/O statistics"""
+    try:
+        io = psutil.net_io_counters()
+        return {
+            'bytes_sent': io.bytes_sent,
+            'bytes_recv': io.bytes_recv,
+            'packets_sent': io.packets_sent,
+            'packets_recv': io.packets_recv
+        }
+    except:
+        return {}
+
+def get_boot_time() -> str:
+    """Get system boot time"""
+    try:
+        boot_time = datetime.fromtimestamp(psutil.boot_time())
+        return boot_time.isoformat()
+    except:
+        return ""
+
+def get_load_average() -> List[float]:
+    """Get system load average"""
+    try:
+        return list(psutil.getloadavg())
+    except:
+        return [0.0, 0.0, 0.0]
+
+def get_user_sessions() -> List[Dict]:
+    """Get active user sessions"""
+    try:
+        users = psutil.users()
+        return [{'name': u.name, 'terminal': u.terminal, 'host': u.host, 'started': u.started} for u in users]
+    except:
+        return []
+
+def check_cpu_usage(threshold=80):
+    """Enhanced CPU usage check"""
+    try:
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        cpu_count = psutil.cpu_count()
+        return {
+            'percent': cpu_percent,
+            'warning': cpu_percent > threshold,
+            'core_count': cpu_count
+        }
+    except:
+        return {'percent': 0, 'warning': False, 'core_count': 0}
+
+def check_memory_usage(threshold=80):
+    """Enhanced memory usage check"""
+    try:
+        mem = psutil.virtual_memory()
+        swap = psutil.swap_memory()
+        return {
+            'percent': mem.percent,
+            'warning': mem.percent > threshold,
+            'swap_percent': swap.percent,
+            'swap_used': swap.used,
+            'swap_total': swap.total
+        }
+    except:
+        return {'percent': 0, 'warning': False}
+
+def check_running_process_summary(user_filter=None, name_filter=None):
+    """Enhanced process summary with filters"""
+    try:
+        processes = []
+        for proc in psutil.process_iter(['name', 'cpu_percent', 'memory_percent', 'username']):
+            try:
+                pinfo = proc.info
+                if user_filter and pinfo['username'] != user_filter:
+                    continue
+                if name_filter and name_filter not in pinfo['name']:
+                    continue
+                processes.append(pinfo)
+            except:
+                pass
+        
+        processes.sort(key=lambda x: x.get('cpu_percent', 0), reverse=True)
+        return processes[:10]
+    except:
+        return []
+
+def check_network_connections(protocol=None, state=None):
+    """Enhanced network connections with filters"""
+    try:
+        connections = psutil.net_connections()
+        filtered = []
+        for conn in connections:
+            if protocol and conn.type.name != protocol:
+                continue
+            if state and conn.status != state:
+                continue
+            filtered.append({
+                'type': conn.type.name if hasattr(conn.type, 'name') else str(conn.type),
+                'status': conn.status,
+                'laddr': f"{conn.laddr.ip}:{conn.laddr.port}" if conn.laddr else None,
+                'raddr': f"{conn.raddr.ip}:{conn.raddr.port}" if conn.raddr else None
+            })
+        return filtered[:10]
+    except:
+        return []
