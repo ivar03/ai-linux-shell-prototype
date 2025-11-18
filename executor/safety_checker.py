@@ -185,20 +185,82 @@ class SafetyChecker:
 
     def _check_dangerous_patterns(self, command: str) -> SafetyResult:
         matched = []
-        for pattern in [
-            r":\(\)\{.*\}",
-            r"while\s+true.*do.*done",
-            r"yes\s+.*\|\s*.*"
-        ]:
+
+        # Critical patterns
+        critical_patterns = [
+            r":\(\)\{.*\}",  # Fork bomb
+            r"while\s+true.*do.*done",  # Infinite loop
+            r">.*/(etc/passwd|etc/shadow)",  # Overwrite critical files
+            r"bash\s+-i\s+>&\s+/dev/tcp",  # Reverse shell
+            r"nc\s+-e\s+/bin/(ba)?sh",  # Netcat backdoor
+            r"curl.*\|\s*(bash|sh)",  # Pipe to shell
+            r"wget.*\|\s*(bash|sh)",  # Pipe to shell
+            r"eval.*\$\(",  # Eval with command substitution
+            r"base64.*\|\s*(bash|sh)",  # Base64 decode to shell
+            r"perl\s+-e.*system",  # Perl system call
+            r"python.*os\.system",  # Python system call
+            r"awk.*system\(",  # Awk system call
+            r"find.*-exec.*rm",  # Find with rm
+            r"xargs.*rm",  # Xargs with rm
+        ]
+
+        # High-risk patterns
+        high_risk_patterns = [
+            r"(LD_PRELOAD|LD_LIBRARY_PATH)=",  # Library preloading
+            r"PATH=/tmp",  # PATH injection
+            r"BASH_ENV=",  # Bash environment exploit
+            r"cat.*/dev/urandom",  # Random data generation
+            r"dd\s+if=/dev/zero",  # Disk filling
+            r"nohup.*&$",  # Background persistent process
+            r"(tcpdump|wireshark|tshark)",  # Packet sniffing
+            r"(nmap|masscan)",  # Network scanning
+            r"(arpspoof|ettercap)",  # Network attacks
+            r"\>\s*~?/\.bash_history",  # History tampering
+            r"rm.*\.bash_history",  # History deletion
+            r"history\s+-c",  # Clear history
+            r"echo.*>>.*\.(bashrc|profile)",  # Persistence mechanism
+            r"crontab.*-",  # Crontab modification
+            r"@reboot",  # Cron at reboot
+        ]
+
+        # Medium-risk patterns (obfuscation)
+        medium_risk_patterns = [
+            r"\\x[0-9a-f]{2}",  # Hex encoding
+            r"\$\(echo\s+[A-Za-z0-9+/=]+\s*\|\s*base64",  # Base64
+            r"\|\s*xxd\s+-r",  # Hex decode
+            r"tr\s+.*'A-Za-z'.*'N-ZA-Mn-za-m'",  # ROT13
+        ]
+
+        for pattern in critical_patterns:
             if re.search(pattern, command, re.IGNORECASE):
                 matched.append(pattern)
-        if matched:
-            return SafetyResult(
-                is_safe=False,
-                risk_level=RiskLevel.CRITICAL.value,
-                reason="Matches dangerous known pattern",
-                blocked_patterns=matched
-            )
+                return SafetyResult(
+                    is_safe=False,
+                    risk_level=RiskLevel.CRITICAL.value,
+                    reason="Matches critical dangerous pattern",
+                    blocked_patterns=matched
+                )
+
+        for pattern in high_risk_patterns:
+            if re.search(pattern, command, re.IGNORECASE):
+                matched.append(pattern)
+                return SafetyResult(
+                    is_safe=False,
+                    risk_level=RiskLevel.HIGH.value,
+                    reason="Matches high-risk pattern",
+                    blocked_patterns=matched
+                )
+
+        for pattern in medium_risk_patterns:
+            if re.search(pattern, command, re.IGNORECASE):
+                matched.append(pattern)
+                return SafetyResult(
+                    is_safe=False,
+                    risk_level=RiskLevel.MEDIUM.value,
+                    reason="Matches suspicious obfuscation pattern",
+                    blocked_patterns=matched
+                )
+
         return SafetyResult(is_safe=True, risk_level=RiskLevel.LOW.value, reason="")
 
     def _check_privilege_commands(self, command: str) -> SafetyResult:

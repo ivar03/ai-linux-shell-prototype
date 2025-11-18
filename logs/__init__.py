@@ -2,6 +2,7 @@ import os
 import json
 import sqlite3
 import logging
+import fcntl
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Any
@@ -105,26 +106,34 @@ class LogManager:
     
     def _log_to_json(self, entry: LogEntry):
         try:
-            # Read existing logs
-            logs = []
-            if self.json_log_path.exists():
-                with open(self.json_log_path, 'r') as f:
+            # Use file locking for concurrent writes
+            with open(self.json_log_path, 'a+') as f:
+                # Acquire exclusive lock
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                try:
+                    # Read existing logs
+                    f.seek(0)
                     try:
-                        logs = json.load(f)
+                        content = f.read()
+                        logs = json.loads(content) if content else []
                     except json.JSONDecodeError:
                         logs = []
-            
-            # Add new entry - asdict handles nested structures automatically
-            logs.append(asdict(entry))
-            
-            # Keep only last 1000 entries to prevent file from growing too large
-            if len(logs) > 1000:
-                logs = logs[-1000:]
-            
-            # Write back to file
-            with open(self.json_log_path, 'w') as f:
-                json.dump(logs, f, indent=2)
-                
+
+                    # Add new entry - asdict handles nested structures automatically
+                    logs.append(asdict(entry))
+
+                    # Keep only last 1000 entries to prevent file from growing too large
+                    if len(logs) > 1000:
+                        logs = logs[-1000:]
+
+                    # Write back to file
+                    f.seek(0)
+                    f.truncate()
+                    json.dump(logs, f, indent=2)
+                finally:
+                    # Release lock
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
         except Exception as e:
             logging.error(f"Failed to log to JSON: {e}")
 
@@ -257,6 +266,209 @@ class LogManager:
             return self._get_sqlite_stats()
         else:
             return self._get_json_stats()
+
+    def filter_by_status(self, status: str) -> List[LogEntry]:
+        """Filter logs by status"""
+        if self.log_format == "sqlite":
+            try:
+                with sqlite3.connect(self.db_path) as conn:
+                    conn.row_factory = sqlite3.Row
+                    cursor = conn.execute('SELECT * FROM sessions WHERE status = ? ORDER BY timestamp DESC', (status,))
+                    entries = []
+                    for row in cursor:
+                        tags = json.loads(row['tags']) if row['tags'] else []
+                        context = json.loads(row['context']) if row['context'] else {}
+                        entries.append(LogEntry(
+                            session_id=row['session_id'], timestamp=row['timestamp'],
+                            query=row['query'], generated_command=row['generated_command'],
+                            status=row['status'], result=row['result'] or "",
+                            execution_time=row['execution_time'] or 0.0,
+                            model_used=row['model_used'] or "",
+                            safety_warnings=row['safety_warnings'] or "",
+                            tags=tags, context=context
+                        ))
+                    return entries
+            except Exception:
+                return []
+        else:
+            if not self.json_log_path.exists():
+                return []
+            with open(self.json_log_path, 'r') as f:
+                logs = json.load(f)
+            return [LogEntry(**log) for log in logs if log.get('status') == status]
+
+    def filter_by_date_range(self, start_time: datetime, end_time: datetime) -> List[LogEntry]:
+        """Filter logs by date range"""
+        entries = self.get_history(10000)  # Get all
+        filtered = []
+        for entry in entries:
+            try:
+                entry_time = datetime.fromisoformat(entry.timestamp)
+                if start_time <= entry_time <= end_time:
+                    filtered.append(entry)
+            except Exception:
+                continue
+        return filtered
+
+    def filter_by_model(self, model: str) -> List[LogEntry]:
+        """Filter logs by AI model"""
+        if self.log_format == "sqlite":
+            try:
+                with sqlite3.connect(self.db_path) as conn:
+                    conn.row_factory = sqlite3.Row
+                    cursor = conn.execute('SELECT * FROM sessions WHERE model_used = ? ORDER BY timestamp DESC', (model,))
+                    entries = []
+                    for row in cursor:
+                        tags = json.loads(row['tags']) if row['tags'] else []
+                        context = json.loads(row['context']) if row['context'] else {}
+                        entries.append(LogEntry(
+                            session_id=row['session_id'], timestamp=row['timestamp'],
+                            query=row['query'], generated_command=row['generated_command'],
+                            status=row['status'], result=row['result'] or "",
+                            execution_time=row['execution_time'] or 0.0,
+                            model_used=row['model_used'] or "",
+                            safety_warnings=row['safety_warnings'] or "",
+                            tags=tags, context=context
+                        ))
+                    return entries
+            except Exception:
+                return []
+        else:
+            if not self.json_log_path.exists():
+                return []
+            with open(self.json_log_path, 'r') as f:
+                logs = json.load(f)
+            return [LogEntry(**log) for log in logs if log.get('model_used') == model]
+
+    def search_queries(self, search_term: str) -> List[LogEntry]:
+        """Search in query text"""
+        entries = self.get_history(10000)  # Get all
+        return [e for e in entries if search_term.lower() in e.query.lower()]
+
+    def search_commands(self, search_term: str) -> List[LogEntry]:
+        """Search in command text"""
+        entries = self.get_history(10000)  # Get all
+        return [e for e in entries if search_term.lower() in e.generated_command.lower()]
+
+    def filter_by_execution_time(self, min_time: float = None, max_time: float = None) -> List[LogEntry]:
+        """Filter by execution time"""
+        entries = self.get_history(10000)  # Get all
+        filtered = []
+        for entry in entries:
+            if min_time is not None and entry.execution_time < min_time:
+                continue
+            if max_time is not None and entry.execution_time > max_time:
+                continue
+            filtered.append(entry)
+        return filtered
+
+    def export_to_csv(self, filepath: str):
+        """Export logs to CSV"""
+        import csv
+        entries = self.get_history(10000)  # Get all
+        with open(filepath, 'w', newline='') as f:
+            if entries:
+                fieldnames = ['session_id', 'timestamp', 'query', 'generated_command', 'status',
+                             'result', 'execution_time', 'model_used']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                for entry in entries:
+                    writer.writerow({
+                        'session_id': entry.session_id,
+                        'timestamp': entry.timestamp,
+                        'query': entry.query,
+                        'generated_command': entry.generated_command,
+                        'status': entry.status,
+                        'result': entry.result,
+                        'execution_time': entry.execution_time,
+                        'model_used': entry.model_used
+                    })
+
+    def export_to_json(self, filepath: str):
+        """Export logs to JSON"""
+        entries = self.get_history(10000)  # Get all
+        with open(filepath, 'w') as f:
+            json.dump([asdict(e) for e in entries], f, indent=2)
+
+    def import_from_json(self, filepath: str):
+        """Import logs from JSON file"""
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+        for item in data:
+            self.log_session(
+                session_id=item.get('session_id', ''),
+                query=item.get('query', ''),
+                command=item.get('generated_command', ''),
+                status=item.get('status', ''),
+                result=item.get('result', ''),
+                execution_time=item.get('execution_time', 0.0),
+                model_used=item.get('model_used', ''),
+                safety_warnings=item.get('safety_warnings', ''),
+                tags=item.get('tags', []),
+                context=item.get('context', {})
+            )
+
+    def import_from_csv(self, filepath: str):
+        """Import logs from CSV file"""
+        import csv
+        with open(filepath, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                self.log_session(
+                    session_id=row.get('session_id', ''),
+                    query=row.get('query', ''),
+                    command=row.get('generated_command', ''),
+                    status=row.get('status', 'SUCCESS'),
+                    result=row.get('result', ''),
+                    execution_time=float(row.get('execution_time', 0.0)),
+                    model_used=row.get('model_used', '')
+                )
+
+    def backup_logs(self, backup_path: str):
+        """Backup logs to file"""
+        import shutil
+        if self.log_format == "sqlite":
+            shutil.copy2(self.db_path, backup_path)
+        else:
+            shutil.copy2(self.json_log_path, backup_path)
+
+    def restore_from_backup(self, backup_path: str):
+        """Restore logs from backup"""
+        import shutil
+        if self.log_format == "sqlite":
+            shutil.copy2(backup_path, self.db_path)
+        else:
+            shutil.copy2(backup_path, self.json_log_path)
+
+    def merge_logs(self, log_dirs: List[str]):
+        """Merge logs from multiple directories"""
+        for log_dir in log_dirs:
+            other_manager = LogManager(log_format=self.log_format, log_dir=log_dir)
+            entries = other_manager.get_history(10000)
+            for entry in entries:
+                self.log_session(
+                    session_id=entry.session_id,
+                    query=entry.query,
+                    command=entry.generated_command,
+                    status=entry.status,
+                    result=entry.result,
+                    execution_time=entry.execution_time,
+                    model_used=entry.model_used,
+                    safety_warnings=entry.safety_warnings,
+                    tags=entry.tags,
+                    context=entry.context
+                )
+
+    def clear_all_logs(self):
+        """Clear all logs"""
+        if self.log_format == "sqlite":
+            with sqlite3.connect(self.db_path) as conn:
+                conn.execute("DELETE FROM sessions")
+                conn.commit()
+        else:
+            if self.json_log_path.exists():
+                with open(self.json_log_path, 'w') as f:
+                    json.dump([], f)
     
     def _get_sqlite_stats(self) -> Dict[str, Any]:
         try:
